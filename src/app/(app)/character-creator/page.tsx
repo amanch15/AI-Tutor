@@ -36,16 +36,25 @@ export default function CharacterCreatorPage() {
       const backstory = formData.get('backstory') as string;
 
       if (!name || !role || !backstory) {
-        return { personality: '', error: 'Please fill out all fields.' };
+        return { name: '', role: '', personality: '', error: 'Please fill out all fields.' };
       }
 
       const result = await createAiCharacter({ name, role, backstory });
       return result;
-    } catch (e) {
+    } catch (e: any) {
       console.error(e);
-      return { personality: '', error: 'Failed to create character. Please try again.' };
+      const errorMessage = e.message.includes('BILLING') 
+        ? 'Image generation is unavailable, but your character profile was created.'
+        : 'Failed to create character. Please try again.';
+
+      // Even if image fails, we might have partial data to return.
+      if (e.result) {
+        return { ...e.result, error: errorMessage };
+      }
+      
+      return { name: '', role: '', personality: '', error: 'Failed to create character. Please try again.' };
     }
-  }, { personality: '' });
+  }, { name: '', role: '', personality: '' });
 
   return (
     <div className="max-w-4xl mx-auto">
@@ -117,8 +126,11 @@ export default function CharacterCreatorPage() {
                     <div className="animate-in fade-in space-y-4">
                          <div className="flex items-center gap-4">
                             <Avatar className="h-16 w-16">
-                                <AvatarImage src={state.photoUrl} alt="AI Character" />
-                                <AvatarFallback><User /></AvatarFallback>
+                                {state.photoUrl ? (
+                                    <AvatarImage src={state.photoUrl} alt="AI Character" />
+                                ) : (
+                                    <AvatarFallback><User /></AvatarFallback>
+                                )}
                             </Avatar>
                             <div>
                                 <h3 className="text-xl font-bold font-headline">{state.name}</h3>
@@ -129,10 +141,18 @@ export default function CharacterCreatorPage() {
                             <h4 className="font-semibold mb-2">Personality & Backstory</h4>
                             <p className="text-sm text-muted-foreground whitespace-pre-wrap">{state.personality}</p>
                         </div>
+                        {state.imagePrompt && (
+                           <div>
+                                <h4 className="font-semibold mb-2">Image Prompt</h4>
+                                <p className="text-xs text-muted-foreground/80 bg-secondary p-2 rounded-md font-code">
+                                    {state.imagePrompt}
+                                </p>
+                           </div>
+                        )}
                     </div>
                 )}
 
-                {!state?.personality && !isPending && (
+                {!state?.personality && !isPending && !state?.error && (
                     <div className="text-center text-muted-foreground p-8">
                         <p>Your character's profile will appear here once created.</p>
                     </div>

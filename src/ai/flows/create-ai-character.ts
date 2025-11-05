@@ -22,7 +22,8 @@ const CreateAiCharacterOutputSchema = z.object({
   name: z.string().describe("The character's name."),
   role: z.string().describe("The character's role."),
   personality: z.string().describe('A summary of the AI character\'s personality, written in the first person from the character\'s perspective.'),
-  photoUrl: z.string().describe('A URL for a photorealistic portrait of the character.'),
+  photoUrl: z.string().optional().describe('A URL for a photorealistic portrait of the character.'),
+  imagePrompt: z.string().optional().describe('A prompt for an image generation model to create a portrait.'),
 });
 export type CreateAiCharacterOutput = z.infer<typeof CreateAiCharacterOutputSchema>;
 
@@ -34,9 +35,7 @@ export async function createAiCharacter(
 
 const characterSystemPrompt = `You are an AI character creation assistant. Your task is to take a user's input for a character's name, role, and backstory, and transform it into a cohesive and engaging character profile.
 
-Based on the user's input, you will:
-1.  Generate a brief, first-person summary of the character's personality and backstory. This should capture the essence of the character and be written from their point of view.
-2.  Generate a prompt for an image generation model to create a photorealistic portrait of the character. The prompt should be descriptive and reflect the character's role, personality, and any physical attributes mentioned in the backstory.
+Based on the user's input, you will generate a brief, first-person summary of the character's personality and backstory. This should capture the essence of the character and be written from their point of view.
 
 User Input:
 Name: {{{name}}}
@@ -47,9 +46,12 @@ Backstory: {{{backstory}}}
 const characterPrompt = ai.definePrompt({
   name: 'createAiCharacterPrompt',
   input: {schema: CreateAiCharacterInputSchema},
-  output: {schema: CreateAiCharacterOutputSchema},
+  output: {schema: z.object({
+      name: z.string(),
+      role: z.string(),
+      personality: z.string(),
+  })},
   prompt: characterSystemPrompt,
-  model: 'googleai/gemini-2.5-flash',
 });
 
 
@@ -65,20 +67,21 @@ const createAiCharacterFlow = ai.defineFlow(
       throw new Error('Failed to generate character data.');
     }
 
-    // Since Gemini can't generate images and text in the same call in this version, we make a second call for the image.
-    // A more advanced implementation might use a tool.
     const { text: imagePrompt } = await ai.generate({
         prompt: `Based on the following character, create a concise image generation prompt for a photorealistic portrait: Name: ${characterData.name}, Role: ${characterData.role}, Personality: ${characterData.personality}`,
     });
-
-    const { media } = await ai.generate({
-        model: 'googleai/imagen-4.0-fast-generate-001',
-        prompt: imagePrompt,
-    });
+    
+    // In a real app with billing enabled, you would generate the image.
+    // For now, we will return the prompt itself.
+    // const { media } = await ai.generate({
+    //     model: 'googleai/imagen-4.0-fast-generate-001',
+    //     prompt: imagePrompt,
+    // });
     
     return {
         ...characterData,
-        photoUrl: media.url,
+        imagePrompt: imagePrompt,
+        // photoUrl: media.url,
     };
   }
 );
