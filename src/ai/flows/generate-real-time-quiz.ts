@@ -16,7 +16,7 @@ const QuestionSchema = z.object({
   answer: z.string().describe('The correct answer from the options.'),
 });
 
-export const GenerateRealTimeQuizInputSchema = z.object({
+const GenerateRealTimeQuizInputSchema = z.object({
   topic: z.string().describe('The topic for the quiz.'),
   numberOfQuestions: z.number().describe('The number of questions to generate.'),
 });
@@ -24,7 +24,7 @@ export type GenerateRealTimeQuizInput = z.infer<
   typeof GenerateRealTimeQuizInputSchema
 >;
 
-export const GenerateRealTimeQuizOutputSchema = z.object({
+const GenerateRealTimeQuizOutputSchema = z.object({
   title: z.string().describe('The title of the quiz.'),
   questions: z.array(QuestionSchema),
 });
