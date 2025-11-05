@@ -125,7 +125,7 @@ export default function StoryTimePage() {
         </p>
       </header>
 
-      <Card className="mb-8 shadow-lg">
+      <Card className="mb-8 bg-card/50 backdrop-blur-sm">
         <CardContent className="p-6">
           <form action={formAction} className="grid gap-4">
             <div className="grid gap-2">
@@ -167,7 +167,7 @@ export default function StoryTimePage() {
             <CarouselContent>
               {storyState.pages.map((page, index) => (
                 <CarouselItem key={index}>
-                  <Card className="overflow-hidden">
+                  <Card className="overflow-hidden bg-card/50 backdrop-blur-sm">
                     <div className="p-6 md:p-8 min-h-60 flex items-center justify-center">
                       <p className="text-muted-foreground text-lg text-center leading-relaxed">{page.text}</p>
                     </div>

@@ -21,7 +21,7 @@ export default function HistoryPage() {
             A record of all your completed lessons, quizzes, and games.
             </p>
         </header>
-        <Card>
+        <Card className="bg-card/50 backdrop-blur-sm">
             <CardContent className="p-0">
                 <Table>
                 <TableHeader>

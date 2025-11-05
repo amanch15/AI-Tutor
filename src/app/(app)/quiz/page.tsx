@@ -77,7 +77,7 @@ function QuizContent() {
               Generate practice questions for any topic.
             </p>
         </header>
-        <Card className="shadow-lg">
+        <Card className="bg-card/50 backdrop-blur-sm">
           <CardHeader>
             <CardTitle className="font-headline text-2xl">Generate a New Quiz</CardTitle>
             <CardDescription>Enter a topic and select the number of questions for your quiz.</CardDescription>
@@ -128,7 +128,7 @@ function QuizContent() {
   if (quizState === 'completed' && results) {
     return (
       <div className="max-w-2xl mx-auto">
-        <Card>
+        <Card className="bg-card/50 backdrop-blur-sm">
           <CardHeader className="text-center">
             <CardTitle className="font-headline text-3xl">{quizData?.title}</CardTitle>
             <CardDescription className="text-xl">You scored {results.score.toFixed(0)}%</CardDescription>
@@ -164,7 +164,7 @@ function QuizContent() {
       <div className="max-w-2xl mx-auto">
           <h1 className="text-3xl font-bold font-headline mb-2 text-center">{quizData.title}</h1>
           <p className="text-muted-foreground mb-6 text-center">Answer the questions below.</p>
-          <Card>
+          <Card className="bg-card/50 backdrop-blur-sm">
               <CardContent className="p-6 space-y-6">
               {quizData.questions.map((q, i) => (
                   <div key={i} className="grid gap-3">

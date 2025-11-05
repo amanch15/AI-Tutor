@@ -36,7 +36,7 @@ export default function CharacterCreatorPage() {
       const backstory = formData.get('backstory') as string;
 
       if (!name || !role || !backstory) {
-        return { name: '', role: '', personality: '', error: 'Please fill out all fields.' };
+        return { name: '', role: '', personality: '', imagePrompt: '', error: 'Please fill out all fields.' };
       }
 
       const result = await createAiCharacter({ name, role, backstory });
@@ -52,9 +52,9 @@ export default function CharacterCreatorPage() {
         return { ...e.result, error: errorMessage };
       }
       
-      return { name: '', role: '', personality: '', error: 'Failed to create character. Please try again.' };
+      return { name: '', role: '', personality: '', imagePrompt: '', error: 'Failed to create character. Please try again.' };
     }
-  }, { name: '', role: '', personality: '' });
+  }, { name: '', role: '', personality: '', imagePrompt: '' });
 
   return (
     <div className="max-w-4xl mx-auto">
@@ -66,7 +66,7 @@ export default function CharacterCreatorPage() {
       </header>
 
       <div className="grid md:grid-cols-2 gap-8">
-        <Card className="shadow-lg">
+        <Card className="bg-card/50 backdrop-blur-sm">
           <CardHeader>
             <CardTitle>Define Your AI's Personality</CardTitle>
             <CardDescription>Give your AI tutor a unique identity.</CardDescription>
@@ -107,7 +107,7 @@ export default function CharacterCreatorPage() {
         </Card>
         
         <div className="flex flex-col gap-8">
-            <Card className="shadow-lg">
+            <Card className="bg-card/50 backdrop-blur-sm">
                 <CardHeader>
                     <CardTitle>Preview</CardTitle>
                     <CardDescription>See your AI character's personality profile.</CardDescription>

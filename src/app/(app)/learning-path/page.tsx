@@ -68,7 +68,7 @@ export default function LearningPathPage() {
         </p>
       </header>
 
-      <Card className="mb-8 shadow-lg">
+      <Card className="mb-8 bg-card/50 backdrop-blur-sm">
         <CardContent className="p-6">
           <form action={formAction} className="grid gap-6">
             <div className="grid gap-2">
@@ -114,7 +114,7 @@ export default function LearningPathPage() {
                     <div className="flex items-center justify-center h-16 w-16 rounded-full bg-secondary border-4 border-background absolute left-0 -translate-x-1/2 md:relative md:left-auto md:translate-x-0">
                         <span className="text-xl font-bold font-headline text-primary">{index + 1}</span>
                     </div>
-                    <Card className="md:col-start-2 shadow-sm hover:shadow-lg transition-shadow">
+                    <Card className="md:col-start-2 bg-card/50 backdrop-blur-sm hover:shadow-lg transition-shadow">
                         <CardHeader>
                         <CardTitle className="font-headline text-xl">{step.title}</CardTitle>
                         <CardDescription>{step.description}</CardDescription>

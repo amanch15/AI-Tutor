@@ -42,6 +42,8 @@ const menuItems = [
   { href: '/games', label: 'Games', icon: Gamepad2 },
   { href: '/resources', label: 'Resources', icon: FolderKanban },
   { href: '/history', label: 'History', icon: History },
+  { href: '/character-creator', label: 'Character Creator', icon: Users },
+  { href: '/profile', label: 'Profile', icon: User },
 ];
 
 const bottomMenuItems = [

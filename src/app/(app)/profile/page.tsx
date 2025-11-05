@@ -51,7 +51,7 @@ export default function ProfilePage() {
             onClick={() => setSelectedLevel(level.id)}
             className={cn(
               'cursor-pointer transition-all duration-300 hover:shadow-2xl hover:-translate-y-2 flex flex-col',
-              selectedLevel === level.id ? 'ring-2 ring-primary shadow-xl' : 'shadow-lg bg-card/60'
+              selectedLevel === level.id ? 'ring-2 ring-primary shadow-xl' : 'shadow-lg bg-card/50 backdrop-blur-sm'
             )}
           >
             <CardHeader className="text-center items-center">

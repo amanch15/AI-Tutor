@@ -61,7 +61,7 @@ export default function ResourcesPage() {
         </p>
       </header>
       
-      <Card className="mb-8">
+      <Card className="mb-8 bg-card/50 backdrop-blur-sm">
         <CardContent className="p-6">
             <form action={formAction} className="flex flex-col sm:flex-row items-end gap-4">
                 <div className="grid gap-2 w-full">
@@ -90,7 +90,7 @@ export default function ResourcesPage() {
           <h2 className="text-2xl font-bold font-headline mb-4">Recommended for you</h2>
           <div className="grid gap-4">
             {state.resources.map((resource, index) => (
-              <Card key={index} className="hover:bg-secondary/50 transition-colors">
+              <Card key={index} className="bg-card/50 backdrop-blur-sm hover:bg-secondary/50 transition-colors">
                  <Link href="#" className="block p-4">
                     <div className="flex items-center justify-between">
                         <div className="flex items-center gap-4">
