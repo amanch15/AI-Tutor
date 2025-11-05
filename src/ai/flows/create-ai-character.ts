@@ -49,9 +49,7 @@ const characterPrompt = ai.definePrompt({
   input: {schema: CreateAiCharacterInputSchema},
   output: {schema: CreateAiCharacterOutputSchema},
   prompt: characterSystemPrompt,
-  config: {
-    model: 'googleai/gemini-2.5-flash',
-  }
+  model: 'googleai/gemini-2.5-flash',
 });
 
 
