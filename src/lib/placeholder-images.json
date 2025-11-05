@@ -1,3 +1,46 @@
 {
-  "placeholderImages": []
+  "placeholderImages": [
+    {
+      "id": "game-math",
+      "description": "An engaging math puzzle game.",
+      "imageUrl": "https://images.unsplash.com/photo-1723612955177-96010a7a0cc0?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxtYXRoJTIwcHV6emxlfGVufDB8fHx8MTc2MjM2Njg1NHww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "math puzzle"
+    },
+    {
+      "id": "game-spelling",
+      "description": "A fun spelling bee game.",
+      "imageUrl": "https://images.unsplash.com/photo-1705313381914-a40eb9a578fe?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxMHx8c3BlbGxpbmclMjBibG9ja3N8ZW58MHx8fHwxNzYyMzY2ODU0fDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "spelling blocks"
+    },
+    {
+      "id": "game-history",
+      "description": "An exciting history trivia game.",
+      "imageUrl": "https://images.unsplash.com/photo-1565022074331-68c473aeba1b?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw3fHxoaXN0b3J5JTIwYW5jaWVudHxlbnwwfHx8fDE3NjIzNjY4NTR8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "history ancient"
+    },
+    {
+      "id": "game-science",
+      "description": "A cool science experiment game.",
+      "imageUrl": "https://images.unsplash.com/photo-1562411052-105105232432?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw5fHxzY2llbmNlJTIwY2hlbWlzdHJ5fGVufDB8fHx8MTc2MjM2Njg1NHww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "science chemistry"
+    },
+    {
+      "id": "resource-video",
+      "description": "A video tutorial on a complex topic.",
+      "imageUrl": "https://images.unsplash.com/photo-1758599879065-46fd59235166?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw1fHxsZWFybmluZyUyMHZpZGVvfGVufDB8fHx8MTc2MjM2Njg1NHww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "learning video"
+    },
+    {
+      "id": "resource-article",
+      "description": "An in-depth article.",
+      "imageUrl": "https://images.unsplash.com/photo-1588666309990-d68f08e3d4a6?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw2fHxyZWFkaW5nJTIwYm9va3xlbnwwfHx8fDE3NjIzMzI0MTd8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "reading book"
+    },
+    {
+      "id": "user-avatar-1",
+      "description": "User avatar.",
+      "imageUrl": "https://images.unsplash.com/photo-1521119989659-a83eee488004?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw5fHxwZXJzb24lMjBwb3J0cmFpdHxlbnwwfHx8fDE3NjIyODA1NDl8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "person portrait"
+    }
+  ]
 }
