@@ -37,13 +37,11 @@ const menuItems = [
   { href: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
   { href: '/learning-path', label: 'Learning Path', icon: BookOpen },
   { href: '/tutor', label: 'AI Tutor', icon: MessageCircle },
-  { href: '/character-creator', label: 'Character Creator', icon: Users },
   { href: '/games', label: 'Games', icon: Gamepad2 },
   { href: '/resources', label: 'Resources', icon: FolderKanban },
   { href: '/quiz', label: 'Quizzes', icon: Sparkles },
   { href: '/storytime', label: 'Storytime', icon: BookImage },
   { href: '/history', label: 'History', icon: History },
-  { href: '/profile', label: 'Profile', icon: User },
 ];
 
 const bottomMenuItems = [

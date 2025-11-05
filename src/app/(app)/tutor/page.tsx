@@ -10,20 +10,16 @@ import { Bot, Send, User } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import Image from 'next/image';
 import { PlaceHolderImages } from '@/lib/placeholder-images';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
 type Message = {
   role: 'user' | 'ai';
   content: string;
 };
 
-type AcademicLevel = 'K-12' | 'College/University' | 'PhD/Professional';
-
 export default function TutorPage() {
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState('');
   const [isPending, setIsPending] = useState(false);
-  const [academicLevel, setAcademicLevel] = useState<AcademicLevel>('College/University');
   
   const avatar = PlaceHolderImages.find(p => p.id === 'user-avatar-1');
 
@@ -37,7 +33,7 @@ export default function TutorPage() {
     setIsPending(true);
 
     try {
-      const studentRequest = `Academic Level: ${academicLevel}. Question: ${input}`;
+      const studentRequest = `Question: ${input}`;
       const result = await provideAiTutoringSupport({ studentRequest });
       const aiMessage: Message = { role: 'ai', content: result.explanation };
       setMessages(prev => [...prev, aiMessage]);
@@ -54,19 +50,9 @@ export default function TutorPage() {
       <header className="text-center mb-8">
         <div className="flex justify-center items-center gap-4 mb-2">
             <h1 className="text-4xl font-bold font-headline">AI Tutor</h1>
-            <Select value={academicLevel} onValueChange={(value: AcademicLevel) => setAcademicLevel(value)}>
-                <SelectTrigger className="w-auto border-dashed bg-card/80">
-                    <SelectValue placeholder="Select level" />
-                </SelectTrigger>
-                <SelectContent>
-                    <SelectItem value="K-12">K-12</SelectItem>
-                    <SelectItem value="College/University">College/University</SelectItem>
-                    <SelectItem value="PhD/Professional">PhD/Professional</SelectItem>
-                </SelectContent>
-            </Select>
         </div>
         <p className="text-muted-foreground mt-2">
-          Stuck on a problem? Ask me anything! I&apos;ll tailor my explanation to your level.
+          Stuck on a problem? Ask me anything!
         </p>
       </header>
       
@@ -120,7 +106,7 @@ export default function TutorPage() {
           <Input
             value={input}
             onChange={(e) => setInput(e.target.value)}
-            placeholder={`Ask a ${academicLevel} level question...`}
+            placeholder={`Ask a question...`}
             className="flex-1 bg-transparent border-none focus-visible:ring-0 focus-visible:ring-offset-0"
             disabled={isPending}
           />
