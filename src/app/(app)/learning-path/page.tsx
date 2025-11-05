@@ -1,7 +1,6 @@
 'use client';
 
-import { useState } from 'react';
-import { useFormState } from 'react-dom';
+import { useState, useActionState } from 'react';
 import { generatePersonalizedLearningPath } from '@/ai/flows/generate-personalized-learning-path';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
@@ -14,10 +13,9 @@ type FormState = {
   error?: string;
 } | null;
 
-function SubmitButton() {
-  const [isPending, setIsPending] = useState(false);
+function SubmitButton({ isPending }: { isPending: boolean }) {
   return (
-    <Button type="submit" disabled={isPending} className="w-full" onClick={() => setIsPending(true)}>
+    <Button type="submit" disabled={isPending} className="w-full">
       <Sparkles className="mr-2 h-4 w-4" />
       Generate Path
     </Button>
@@ -26,7 +24,7 @@ function SubmitButton() {
 
 
 export default function LearningPathPage() {
-  const [state, formAction] = useFormState<FormState, FormData>(async (prevState, formData) => {
+  const [state, formAction, isPending] = useActionState<FormState, FormData>(async (prevState, formData) => {
     try {
       const currentKnowledge = formData.get('currentKnowledge') as string;
       const learningGoals = formData.get('learningGoals') as string;
@@ -74,7 +72,7 @@ export default function LearningPathPage() {
                 required
               />
             </div>
-            <SubmitButton />
+            <SubmitButton isPending={isPending} />
           </form>
         </CardContent>
       </Card>
