@@ -39,6 +39,8 @@ const menuItems = [
   { href: '/tutor', label: 'AI Tutor', icon: MessageCircle },
   { href: '/quiz', label: 'AI Quiz Generator', icon: Sparkles },
   { href: '/storytime', label: 'AI Storyteller', icon: BookImage },
+  { href: '/games', label: 'Games', icon: Gamepad2 },
+  { href: '/resources', label: 'Resources', icon: FolderKanban },
   { href: '/history', label: 'History', icon: History },
 ];
 
@@ -52,7 +54,7 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
 
   return (
     <SidebarProvider>
-      <Sidebar collapsible="icon" className="bg-card">
+      <Sidebar collapsible="icon" className="bg-card/70 backdrop-blur-sm">
         <SidebarRail />
         <SidebarHeader>
           <Logo />
