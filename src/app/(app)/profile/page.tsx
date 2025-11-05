@@ -13,7 +13,7 @@ const levels = [
     id: 'k12' as AcademicLevel,
     title: 'Class 1 to K-12',
     icon: School,
-    description: 'Focus on foundational skills, gamified lessons, and curriculum alignment (e.g., CBSE, ICSE) for core subject mastery.',
+    description: 'Focus on foundational skills, gamified lessons, and curriculum alignment for core subject mastery.',
     features: ['Basic Concept Clarification', 'Gamified Lessons', 'Visual & Audio Aids', 'Strong Study Habits'],
   },
   {
@@ -50,19 +50,19 @@ export default function ProfilePage() {
             key={level.id}
             onClick={() => setSelectedLevel(level.id)}
             className={cn(
-              'cursor-pointer transition-all duration-300 hover:shadow-2xl hover:-translate-y-2',
-              selectedLevel === level.id ? 'ring-2 ring-primary shadow-xl' : 'shadow-lg'
+              'cursor-pointer transition-all duration-300 hover:shadow-2xl hover:-translate-y-2 flex flex-col',
+              selectedLevel === level.id ? 'ring-2 ring-primary shadow-xl' : 'shadow-lg bg-card/60'
             )}
           >
-            <CardHeader className="text-center">
+            <CardHeader className="text-center items-center">
                 <div className="mx-auto bg-primary/10 text-primary p-4 rounded-full w-fit mb-4">
                     <level.icon className="h-8 w-8" />
                 </div>
               <CardTitle className="font-headline text-2xl">{level.title}</CardTitle>
               <CardDescription>{level.description}</CardDescription>
             </CardHeader>
-            <CardContent>
-                <div className="border-t pt-4">
+            <CardContent className="flex-1 flex flex-col">
+                <div className="border-t pt-4 mt-auto">
                     <h4 className="font-semibold mb-3 text-center text-sm uppercase text-muted-foreground">Key Features</h4>
                     <ul className="space-y-2">
                         {level.features.map(feature => (

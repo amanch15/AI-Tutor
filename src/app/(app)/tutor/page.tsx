@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
-import { Bot, Send, User, ChevronDown } from 'lucide-react';
+import { Bot, Send, User } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import Image from 'next/image';
 import { PlaceHolderImages } from '@/lib/placeholder-images';
@@ -55,7 +55,7 @@ export default function TutorPage() {
         <div className="flex justify-center items-center gap-4 mb-2">
             <h1 className="text-4xl font-bold font-headline">AI Tutor</h1>
             <Select value={academicLevel} onValueChange={(value: AcademicLevel) => setAcademicLevel(value)}>
-                <SelectTrigger className="w-auto border-dashed">
+                <SelectTrigger className="w-auto border-dashed bg-card/80">
                     <SelectValue placeholder="Select level" />
                 </SelectTrigger>
                 <SelectContent>
@@ -66,7 +66,7 @@ export default function TutorPage() {
             </Select>
         </div>
         <p className="text-muted-foreground mt-2">
-          Stuck on a problem? Ask me anything!
+          Stuck on a problem? Ask me anything! I&apos;ll tailor my explanation to your level.
         </p>
       </header>
       
@@ -81,11 +81,11 @@ export default function TutorPage() {
           {messages.map((message, index) => (
             <div key={index} className={cn('flex items-start gap-4 animate-in fade-in', message.role === 'user' ? 'justify-end' : 'justify-start')}>
               {message.role === 'ai' && (
-                <Avatar className="h-8 w-8 bg-primary text-primary-foreground flex items-center justify-center">
+                <Avatar className="h-8 w-8 bg-primary text-primary-foreground flex items-center justify-center ring-2 ring-primary/20">
                   <Bot className="h-5 w-5"/>
                 </Avatar>
               )}
-              <div className={cn('max-w-prose rounded-lg p-3 text-sm', message.role === 'user' ? 'bg-primary text-primary-foreground rounded-br-none' : 'bg-secondary rounded-bl-none')}>
+              <div className={cn('max-w-prose rounded-lg p-3 text-sm shadow-md', message.role === 'user' ? 'bg-primary text-primary-foreground rounded-br-none' : 'bg-card rounded-bl-none')}>
                 <p className="whitespace-pre-wrap">{message.content}</p>
               </div>
               {message.role === 'user' && avatar && (
@@ -100,10 +100,10 @@ export default function TutorPage() {
           ))}
           {isPending && (
              <div className='flex items-start gap-4 justify-start'>
-                <Avatar className="h-8 w-8 bg-primary text-primary-foreground flex items-center justify-center">
+                <Avatar className="h-8 w-8 bg-primary text-primary-foreground flex items-center justify-center ring-2 ring-primary/20">
                     <Bot className="h-5 w-5"/>
                 </Avatar>
-                <div className="max-w-md rounded-lg p-3 bg-secondary rounded-bl-none">
+                <div className="max-w-md rounded-lg p-3 bg-card rounded-bl-none shadow-md">
                     <div className="flex items-center gap-2">
                         <span className="h-2 w-2 bg-muted-foreground rounded-full animate-bounce [animation-delay:-0.3s]"></span>
                         <span className="h-2 w-2 bg-muted-foreground rounded-full animate-bounce [animation-delay:-0.15s]"></span>
@@ -120,7 +120,7 @@ export default function TutorPage() {
           <Input
             value={input}
             onChange={(e) => setInput(e.target.value)}
-            placeholder="e.g., Explain the Pythagorean theorem"
+            placeholder={`Ask a ${academicLevel} level question...`}
             className="flex-1 bg-transparent border-none focus-visible:ring-0 focus-visible:ring-offset-0"
             disabled={isPending}
           />
