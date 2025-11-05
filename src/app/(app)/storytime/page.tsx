@@ -4,12 +4,11 @@ import { useActionState, useState, useTransition, useEffect, useRef } from 'reac
 import { generateVisualStory, type GenerateVisualStoryOutput } from '@/ai/flows/generate-visual-story';
 import { generateStoryAudio } from '@/ai/flows/generate-story-audio';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious, type CarouselApi } from '@/components/ui/carousel';
-import { Sparkles, Bot, BookImage, Volume2, Loader, AlertTriangle, Play, Pause } from 'lucide-react';
-import Image from 'next/image';
+import { Sparkles, Bot, BookImage, Volume2, Loader, Play, Pause } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
 type StoryPageState = GenerateVisualStoryOutput & {
@@ -53,15 +52,9 @@ export default function StoryTimePage() {
       return result;
     } catch (e: any) {
       console.error(e);
-      const errorMessage = e.message.includes('BILLING') 
-        ? 'Image generation is unavailable, but the story was created. Please enable billing to see images.'
-        : 'Failed to generate story. Please try again.';
+      const errorMessage = 'Failed to generate story. Please try again.';
       
-      // If partial results are available, show them.
-      if (e.result) {
-        return { ...e.result, error: errorMessage };
-      }
-      return { title: '', pages: [], error: 'Failed to generate story. Please try again.' };
+      return { title: '', pages: [], error: errorMessage };
     }
   }, { title: '', pages: [] });
 
@@ -128,7 +121,7 @@ export default function StoryTimePage() {
       <header className="text-center mb-8">
         <h1 className="text-4xl font-bold font-headline">AI Storyteller</h1>
         <p className="text-muted-foreground mt-2">
-          Turn any topic into a beautifully illustrated story.
+          Turn any topic into an audio story.
         </p>
       </header>
 
@@ -170,36 +163,13 @@ export default function StoryTimePage() {
                 <audio ref={audioRef} className="hidden" />
             </div>
 
-          <Carousel setApi={setApi} className="w-full">
+          <Carousel setApi={setApi} className="w-full max-w-2xl mx-auto">
             <CarouselContent>
               {storyState.pages.map((page, index) => (
                 <CarouselItem key={index}>
                   <Card className="overflow-hidden">
-                    <div className="grid md:grid-cols-2">
-                      <div className="relative aspect-square bg-secondary flex items-center justify-center">
-                        {page.imageUrl ? (
-                           <Image 
-                           src={page.imageUrl}
-                           alt={page.imagePrompt}
-                           fill
-                           className="object-cover"
-                           unoptimized
-                        />
-                        ) : (
-                          <div className='flex flex-col items-center text-muted-foreground text-center p-4'>
-                            <AlertTriangle className='h-8 w-8 mb-2' />
-                            <p className='text-sm font-semibold'>Image generation failed</p>
-                            <p className='text-xs'>Billing may be required.</p>
-                          </div>
-                        )}
-                         <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent" />
-                      </div>
-                      <div className="flex flex-col p-6 md:p-8">
-                        <p className="flex-1 text-muted-foreground">{page.text}</p>
-                        <p className="text-xs text-muted-foreground/60 mt-4 font-code bg-secondary/50 p-2 rounded-md">
-                          <span className="font-semibold">Image Prompt:</span> {page.imagePrompt}
-                        </p>
-                      </div>
+                    <div className="p-6 md:p-8 min-h-60 flex items-center justify-center">
+                      <p className="text-muted-foreground text-lg text-center leading-relaxed">{page.text}</p>
                     </div>
                   </Card>
                 </CarouselItem>
