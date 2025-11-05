@@ -26,15 +26,15 @@ function SubmitButton({ isPending }: { isPending: boolean }) {
 const getIconForResource = (resource: string) => {
   const lowerCaseResource = resource.toLowerCase();
   if (lowerCaseResource.includes('video') || lowerCaseResource.includes('youtube')) {
-    return <Video className="h-5 w-5 text-accent" />;
+    return <Video className="h-5 w-5 text-accent-foreground" />;
   }
   if (lowerCaseResource.includes('article') || lowerCaseResource.includes('blog')) {
-    return <Newspaper className="h-5 w-5 text-accent" />;
+    return <Newspaper className="h-5 w-5 text-accent-foreground" />;
   }
   if (lowerCaseResource.includes('book') || lowerCaseResource.includes('textbook')) {
-    return <Book className="h-5 w-5 text-accent" />;
+    return <Book className="h-5 w-5 text-accent-foreground" />;
   }
-  return <BookOpen className="h-5 w-5 text-accent" />;
+  return <BookOpen className="h-5 w-5 text-accent-foreground" />;
 };
 
 
@@ -53,7 +53,7 @@ export default function ResourcesPage() {
   }, null);
 
   return (
-    <div className="max-w-4xl mx-auto">
+    <div className="max-w-4xl mx-auto animate-in fade-in">
       <header className="text-center mb-8">
         <h1 className="text-4xl font-bold font-headline">Find Learning Resources</h1>
         <p className="text-muted-foreground mt-2">
@@ -90,11 +90,13 @@ export default function ResourcesPage() {
           <h2 className="text-2xl font-bold font-headline mb-4">Recommended for you</h2>
           <div className="grid gap-4">
             {state.resources.map((resource, index) => (
-              <Card key={index} className="bg-card/50 backdrop-blur-sm hover:bg-secondary/50 transition-colors">
+              <Card key={index} className="bg-card/50 backdrop-blur-sm hover:bg-secondary/50 transition-colors animate-in fade-in" style={{ animationDelay: `${index * 100}ms`, animationFillMode: 'backwards' }}>
                  <Link href="#" className="block p-4">
                     <div className="flex items-center justify-between">
                         <div className="flex items-center gap-4">
-                            {getIconForResource(resource)}
+                            <div className="flex items-center justify-center h-10 w-10 rounded-lg bg-accent text-accent-foreground">
+                                {getIconForResource(resource)}
+                            </div>
                             <p className="font-medium">{resource}</p>
                         </div>
                         <ArrowUpRight className="h-5 w-5 text-muted-foreground" />

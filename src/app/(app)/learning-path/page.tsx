@@ -60,7 +60,7 @@ export default function LearningPathPage() {
   }, { learningPath: [] });
 
   return (
-    <div className="max-w-4xl mx-auto">
+    <div className="max-w-4xl mx-auto animate-in fade-in">
       <header className="text-center mb-8">
         <h1 className="text-4xl font-bold font-headline">Create Your Learning Path</h1>
         <p className="text-muted-foreground mt-2">

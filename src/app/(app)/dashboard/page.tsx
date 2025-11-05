@@ -29,7 +29,7 @@ import Link from 'next/link';
 
 export default function DashboardPage() {
   return (
-    <div className="flex flex-col gap-8">
+    <div className="flex flex-col gap-8 animate-in fade-in">
       <div>
         <h1 className="text-3xl font-bold font-headline">Welcome back, Alex!</h1>
         <p className="text-muted-foreground">
@@ -38,7 +38,7 @@ export default function DashboardPage() {
       </div>
 
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-        <Card className="lg:col-span-2 bg-card/50 backdrop-blur-sm">
+        <Card className="lg:col-span-2 bg-card/50 backdrop-blur-sm transition-all duration-300 hover:shadow-xl hover:bg-card/70">
           <CardHeader>
             <CardTitle>Weekly Progress</CardTitle>
             <CardDescription>
@@ -63,14 +63,14 @@ export default function DashboardPage() {
           </CardContent>
         </Card>
 
-        <Card className="bg-card/50 backdrop-blur-sm">
+        <Card className="bg-card/50 backdrop-blur-sm transition-all duration-300 hover:shadow-xl hover:bg-card/70">
           <CardHeader>
             <CardTitle>Achievements</CardTitle>
             <CardDescription>Milestones you&apos;ve reached.</CardDescription>
           </CardHeader>
           <CardContent className="grid gap-4">
             {achievementsData.map((achievement) => (
-              <div key={achievement.title} className="flex items-center gap-4">
+              <div key={achievement.title} className="flex items-center gap-4 p-2 rounded-md transition-colors hover:bg-secondary">
                 <div className="bg-primary/10 text-primary p-3 rounded-full">
                   <achievement.icon className="h-6 w-6" />
                 </div>
@@ -87,7 +87,7 @@ export default function DashboardPage() {
       </div>
 
       <div className="grid gap-6 md:grid-cols-2">
-        <Card className="bg-card/50 backdrop-blur-sm">
+        <Card className="bg-card/50 backdrop-blur-sm transition-all duration-300 hover:shadow-xl hover:bg-card/70">
           <CardHeader>
             <CardTitle>Continue Learning</CardTitle>
             <CardDescription>Your courses in progress.</CardDescription>
@@ -105,7 +105,7 @@ export default function DashboardPage() {
           </CardContent>
         </Card>
 
-        <Card className="flex flex-col bg-card/50 backdrop-blur-sm">
+        <Card className="flex flex-col bg-card/50 backdrop-blur-sm transition-all duration-300 hover:shadow-xl hover:bg-card/70">
           <CardHeader>
             <CardTitle>AI Content Tools</CardTitle>
             <CardDescription>

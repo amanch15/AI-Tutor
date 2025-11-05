@@ -2,7 +2,6 @@
 
 import {
   Card,
-  CardContent,
   CardDescription,
   CardFooter,
   CardHeader,
@@ -15,7 +14,7 @@ import Link from 'next/link';
 
 export default function GamesPage() {
   return (
-    <div>
+    <div className="animate-in fade-in">
       <header className="text-center mb-12">
         <h1 className="text-4xl font-bold font-headline">Learning Games</h1>
         <p className="text-muted-foreground mt-2 max-w-2xl mx-auto">
@@ -24,8 +23,12 @@ export default function GamesPage() {
       </header>
 
       <div className="grid md:grid-cols-2 lg:grid-cols-2 gap-8">
-        {gamesData.map((game) => (
-          <Card key={game.id} className="overflow-hidden group transition-all duration-300 hover:shadow-xl hover:scale-105 bg-card/50 backdrop-blur-sm">
+        {gamesData.map((game, index) => (
+          <Card 
+            key={game.id} 
+            className="overflow-hidden group transition-all duration-300 hover:shadow-xl hover:scale-105 bg-card/50 backdrop-blur-sm animate-in fade-in"
+            style={{ animationDelay: `${index * 150}ms`, animationFillMode: 'backwards' }}
+            >
             <CardHeader className="p-0">
               <div className="relative h-60 w-full">
                 <Image

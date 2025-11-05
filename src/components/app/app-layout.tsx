@@ -17,21 +17,17 @@ import {
   BookOpen,
   FolderKanban,
   Gamepad2,
-  GraduationCap,
   History,
   LayoutDashboard,
   MessageCircle,
   Sparkles,
   LifeBuoy,
   Settings,
-  Users,
   BookImage,
-  User,
 } from 'lucide-react';
 import { usePathname } from 'next/navigation';
 import Link from 'next/link';
 import { UserNav } from './user-nav';
-import { Button } from '../ui/button';
 
 const menuItems = [
   { href: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
@@ -98,7 +94,7 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
         </SidebarContent>
       </Sidebar>
       <SidebarInset>
-        <header className="flex h-14 items-center gap-4 border-b bg-background/50 backdrop-blur-sm px-6 sticky top-0 z-30">
+        <header className="flex h-16 items-center gap-4 border-b bg-background/50 backdrop-blur-sm px-6 sticky top-0 z-30">
             <SidebarTrigger className="md:hidden" />
             <div className="flex-1">
                 {/* Optional Header Title */}
