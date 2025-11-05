@@ -24,7 +24,7 @@ import {
 } from '@/lib/data';
 import { Progress } from '@/components/ui/progress';
 import { Button } from '@/components/ui/button';
-import { ArrowRight } from 'lucide-react';
+import { ArrowRight, Sparkles } from 'lucide-react';
 import Link from 'next/link';
 
 export default function DashboardPage() {
@@ -107,9 +107,9 @@ export default function DashboardPage() {
 
         <Card className="flex flex-col bg-card/50 backdrop-blur-sm">
           <CardHeader>
-            <CardTitle>Explore</CardTitle>
+            <CardTitle>AI Content Tools</CardTitle>
             <CardDescription>
-              Discover new topics or get help from your AI tutor.
+              Generate study materials or get help from your AI tutor.
             </CardDescription>
           </CardHeader>
           <CardContent className="flex-1 grid grid-cols-2 gap-4">
@@ -131,9 +131,10 @@ export default function DashboardPage() {
             </Link>
           </CardContent>
           <CardFooter>
-            <Button variant="ghost" className="w-full" asChild>
-                <Link href="/games">
-                    Explore Learning Games <ArrowRight className="ml-2 h-4 w-4" />
+            <Button variant="outline" className="w-full" asChild>
+                <Link href="/quiz">
+                    <Sparkles className="mr-2 h-4 w-4" />
+                    Generate a Quiz
                 </Link>
             </Button>
           </CardFooter>

@@ -71,6 +71,12 @@ function QuizContent() {
   if (quizState === 'configuring') {
     return (
       <div className="max-w-2xl mx-auto">
+         <header className="text-center mb-8">
+            <h1 className="text-4xl font-bold font-headline">AI Quiz Generator</h1>
+            <p className="text-muted-foreground mt-2">
+              Generate practice questions for any topic.
+            </p>
+        </header>
         <Card className="shadow-lg">
           <CardHeader>
             <CardTitle className="font-headline text-2xl">Generate a New Quiz</CardTitle>
