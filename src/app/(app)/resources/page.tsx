@@ -1,12 +1,12 @@
 'use client';
 
-import { useFormState } from 'react-dom';
+import { useActionState } from 'react';
 import { recommendRelevantLearningResources } from '@/ai/flows/recommend-relevant-learning-resources';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Book, Video, Newspaper, ArrowUpRight } from 'lucide-react';
+import { Book, Video, Newspaper, ArrowUpRight, BookOpen } from 'lucide-react';
 import { useState } from 'react';
 import Link from 'next/link';
 
@@ -15,10 +15,9 @@ type FormState = {
   error?: string;
 } | null;
 
-function SubmitButton() {
-  const [isPending, setIsPending] = useState(false);
+function SubmitButton({ isPending }: { isPending: boolean }) {
   return (
-    <Button type="submit" disabled={isPending} className="w-full sm:w-auto" onClick={() => setIsPending(true)}>
+    <Button type="submit" disabled={isPending} className="w-full sm:w-auto">
       Find Resources
     </Button>
   );
@@ -40,7 +39,7 @@ const getIconForResource = (resource: string) => {
 
 
 export default function ResourcesPage() {
-  const [state, formAction] = useFormState<FormState, FormData>(async (prevState, formData) => {
+  const [state, formAction, isPending] = useActionState<FormState, FormData>(async (prevState, formData) => {
     try {
       const studyArea = formData.get('studyArea') as string;
       if (!studyArea) {
@@ -69,12 +68,22 @@ export default function ResourcesPage() {
                     <Label htmlFor="studyArea" className="font-semibold">Study Area</Label>
                     <Input id="studyArea" name="studyArea" placeholder="e.g., Quantum Physics, Renaissance Art" required />
                 </div>
-                <SubmitButton />
+                <SubmitButton isPending={isPending} />
             </form>
         </CardContent>
       </Card>
 
       {state?.error && <p className="text-destructive text-center mb-4">{state.error}</p>}
+
+      {isPending && !state && (
+        <div className="flex justify-center items-center">
+            <div className="flex items-center gap-2">
+                <span className="h-2 w-2 bg-muted-foreground rounded-full animate-bounce [animation-delay:-0.3s]"></span>
+                <span className="h-2 w-2 bg-muted-foreground rounded-full animate-bounce [animation-delay:-0.15s]"></span>
+                <span className="h-2 w-2 bg-muted-foreground rounded-full animate-bounce"></span>
+            </div>
+        </div>
+      )}
 
       {state?.resources && state.resources.length > 0 && (
         <div>
