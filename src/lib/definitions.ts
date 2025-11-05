@@ -18,7 +18,7 @@ export type Achievement = {
 export type HistoryItem = {
   id: string;
   activity: string;
-  type: 'Quiz' | 'Lesson' | 'Game';
+  type: 'Quiz' | 'Lesson' | 'Game' | 'AI Quiz';
   date: string;
   score?: number;
   duration: string;

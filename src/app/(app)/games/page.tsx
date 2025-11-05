@@ -1,3 +1,5 @@
+'use client';
+
 import {
   Card,
   CardContent,
@@ -42,7 +44,7 @@ export default function GamesPage() {
             </CardContent>
             <CardFooter>
                  <Button asChild className="w-full">
-                    <Link href="#">Play Now</Link>
+                    <Link href={`/quiz?topic=${encodeURIComponent(game.title)}`}>Play Now</Link>
                  </Button>
             </CardFooter>
           </Card>

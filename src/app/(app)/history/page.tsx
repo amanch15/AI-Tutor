@@ -1,3 +1,5 @@
+'use client';
+
 import {
   Table,
   TableBody,
@@ -42,7 +44,7 @@ export default function HistoryPage() {
                         </TableCell>
                         <TableCell>{item.date}</TableCell>
                         <TableCell>{item.duration}</TableCell>
-                        <TableCell className="text-right">{item.score ? `${item.score}%` : 'N/A'}</TableCell>
+                        <TableCell className="text-right">{item.score !== undefined ? `${item.score}%` : 'N/A'}</TableCell>
                     </TableRow>
                     ))}
                 </TableBody>
