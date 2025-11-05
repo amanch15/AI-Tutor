@@ -50,7 +50,7 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
 
   return (
     <SidebarProvider>
-      <Sidebar collapsible="icon">
+      <Sidebar collapsible="icon" className="bg-card">
         <SidebarRail />
         <SidebarHeader>
           <Logo />
@@ -63,6 +63,7 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
                   asChild
                   isActive={pathname === item.href}
                   tooltip={item.label}
+                  variant="ghost"
                 >
                   <Link href={item.href}>
                     <item.icon />
@@ -80,6 +81,7 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
                   asChild
                   isActive={pathname === item.href}
                   tooltip={item.label}
+                  variant="ghost"
                 >
                   <Link href="#">
                     <item.icon />

@@ -38,7 +38,7 @@ export default function DashboardPage() {
       </div>
 
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-        <Card className="lg:col-span-2">
+        <Card className="lg:col-span-2 bg-card/50 backdrop-blur-sm">
           <CardHeader>
             <CardTitle>Weekly Progress</CardTitle>
             <CardDescription>
@@ -63,7 +63,7 @@ export default function DashboardPage() {
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="bg-card/50 backdrop-blur-sm">
           <CardHeader>
             <CardTitle>Achievements</CardTitle>
             <CardDescription>Milestones you&apos;ve reached.</CardDescription>
@@ -71,7 +71,7 @@ export default function DashboardPage() {
           <CardContent className="grid gap-4">
             {achievementsData.map((achievement) => (
               <div key={achievement.title} className="flex items-center gap-4">
-                <div className="bg-accent/20 text-accent p-3 rounded-full">
+                <div className="bg-primary/10 text-primary p-3 rounded-full">
                   <achievement.icon className="h-6 w-6" />
                 </div>
                 <div>
@@ -87,7 +87,7 @@ export default function DashboardPage() {
       </div>
 
       <div className="grid gap-6 md:grid-cols-2">
-        <Card>
+        <Card className="bg-card/50 backdrop-blur-sm">
           <CardHeader>
             <CardTitle>Continue Learning</CardTitle>
             <CardDescription>Your courses in progress.</CardDescription>
@@ -105,27 +105,27 @@ export default function DashboardPage() {
           </CardContent>
         </Card>
 
-        <Card className="flex flex-col">
+        <Card className="flex flex-col bg-card/50 backdrop-blur-sm">
           <CardHeader>
             <CardTitle>Explore</CardTitle>
             <CardDescription>
               Discover new topics or get help from your AI tutor.
             </CardDescription>
           </CardHeader>
-          <CardContent className="flex-1 grid gap-4">
+          <CardContent className="flex-1 grid grid-cols-2 gap-4">
             <Link href="/learning-path" className="block">
-              <div className="border p-4 rounded-lg hover:bg-secondary transition-colors h-full">
+              <div className="border p-4 rounded-lg hover:bg-secondary transition-colors h-full flex flex-col items-center justify-center text-center">
                 <h3 className="font-semibold font-headline">New Learning Path</h3>
-                <p className="text-sm text-muted-foreground">
-                  Generate a personalized plan for your studies.
+                <p className="text-sm text-muted-foreground mt-1">
+                  Generate a personalized plan.
                 </p>
               </div>
             </Link>
              <Link href="/tutor" className="block">
-              <div className="border p-4 rounded-lg hover:bg-secondary transition-colors h-full">
+              <div className="border p-4 rounded-lg hover:bg-secondary transition-colors h-full flex flex-col items-center justify-center text-center">
                 <h3 className="font-semibold font-headline">AI Tutor</h3>
-                <p className="text-sm text-muted-foreground">
-                  Ask questions and get instant help.
+                <p className="text-sm text-muted-foreground mt-1">
+                  Ask questions and get help.
                 </p>
               </div>
             </Link>

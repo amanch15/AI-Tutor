@@ -1,24 +1,19 @@
 'use client';
 
 import { useState } from 'react';
-import { useFormState } from 'react-dom';
 import { provideAiTutoringSupport } from '@/ai/flows/provide-ai-tutoring-support';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Bot, Send, User } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import Image from 'next/image';
 import { PlaceHolderImages } from '@/lib/placeholder-images';
 
 type Message = {
   role: 'user' | 'ai';
   content: string;
-};
-
-type ChatState = {
-  messages: Message[];
-  error?: string;
 };
 
 export default function TutorPage() {
@@ -61,18 +56,20 @@ export default function TutorPage() {
       <ScrollArea className="flex-1 mb-4 pr-4">
         <div className="space-y-6">
           {messages.map((message, index) => (
-            <div key={index} className={cn('flex items-start gap-4', message.role === 'user' ? 'justify-end' : 'justify-start')}>
+            <div key={index} className={cn('flex items-start gap-4 animate-in fade-in', message.role === 'user' ? 'justify-end' : 'justify-start')}>
               {message.role === 'ai' && (
                 <Avatar className="h-8 w-8 bg-primary text-primary-foreground flex items-center justify-center">
                   <Bot className="h-5 w-5"/>
                 </Avatar>
               )}
-              <div className={cn('max-w-md rounded-lg p-3', message.role === 'user' ? 'bg-primary text-primary-foreground' : 'bg-secondary')}>
-                <p className="text-sm">{message.content}</p>
+              <div className={cn('max-w-md rounded-lg p-3 text-sm', message.role === 'user' ? 'bg-primary text-primary-foreground rounded-br-none' : 'bg-secondary rounded-bl-none')}>
+                <p>{message.content}</p>
               </div>
-              {message.role === 'user' && (
+              {message.role === 'user' && avatar && (
                 <Avatar className="h-8 w-8">
-                  <AvatarImage src={avatar?.imageUrl} alt="User" data-ai-hint={avatar?.imageHint} />
+                  <div className="relative h-full w-full">
+                    <Image src={avatar.imageUrl} alt="User" fill className="object-cover" data-ai-hint={avatar.imageHint} />
+                  </div>
                   <AvatarFallback><User className="h-5 w-5" /></AvatarFallback>
                 </Avatar>
               )}
@@ -83,7 +80,7 @@ export default function TutorPage() {
                 <Avatar className="h-8 w-8 bg-primary text-primary-foreground flex items-center justify-center">
                     <Bot className="h-5 w-5"/>
                 </Avatar>
-                <div className="max-w-md rounded-lg p-3 bg-secondary">
+                <div className="max-w-md rounded-lg p-3 bg-secondary rounded-bl-none">
                     <div className="flex items-center gap-2">
                         <span className="h-2 w-2 bg-muted-foreground rounded-full animate-bounce [animation-delay:-0.3s]"></span>
                         <span className="h-2 w-2 bg-muted-foreground rounded-full animate-bounce [animation-delay:-0.15s]"></span>
@@ -95,13 +92,13 @@ export default function TutorPage() {
         </div>
       </ScrollArea>
       
-      <div className="mt-auto">
+      <div className="mt-auto bg-background/80 backdrop-blur-sm p-2 rounded-lg border">
         <form onSubmit={handleSubmission} className="flex items-center gap-2">
           <Input
             value={input}
             onChange={(e) => setInput(e.target.value)}
             placeholder="e.g., Explain the Pythagorean theorem"
-            className="flex-1"
+            className="flex-1 bg-transparent border-none focus-visible:ring-0 focus-visible:ring-offset-0"
             disabled={isPending}
           />
           <Button type="submit" size="icon" disabled={isPending || !input.trim()}>
