@@ -24,6 +24,7 @@ import {
   Sparkles,
   LifeBuoy,
   Settings,
+  Users,
 } from 'lucide-react';
 import { usePathname } from 'next/navigation';
 import Link from 'next/link';
@@ -34,6 +35,7 @@ const menuItems = [
   { href: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
   { href: '/learning-path', label: 'Learning Path', icon: BookOpen },
   { href: '/tutor', label: 'AI Tutor', icon: MessageCircle },
+  { href: '/character-creator', label: 'Character Creator', icon: Users },
   { href: '/games', label: 'Games', icon: Gamepad2 },
   { href: '/resources', label: 'Resources', icon: FolderKanban },
   { href: '/quiz', label: 'Quizzes', icon: Sparkles },
