@@ -49,7 +49,7 @@ export default function LearningPathPage() {
         </p>
       </header>
 
-      <Card className="mb-8">
+      <Card className="mb-8 shadow-lg">
         <CardContent className="p-6">
           <form action={formAction} className="grid gap-6">
             <div className="grid gap-2">
@@ -80,10 +80,10 @@ export default function LearningPathPage() {
       {state?.error && <p className="text-destructive text-center mb-4">{state.error}</p>}
       
       {state?.learningPath && (
-        <Card>
+        <Card className="shadow-lg">
           <CardHeader>
             <CardTitle className="font-headline text-2xl flex items-center gap-2">
-              <Sparkles className="text-accent"/>
+              <Sparkles className="text-primary"/>
               Your Personalized Path
             </CardTitle>
             <CardDescription>Follow these steps to achieve your goals.</CardDescription>
