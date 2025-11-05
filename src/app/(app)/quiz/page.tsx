@@ -27,12 +27,12 @@ const quiz = {
   ],
 };
 
-type QuizState = 'not_started' | 'in_progress' | 'completed';
+type QuizStatus = 'not_started' | 'in_progress' | 'completed';
 type Answer = { question: string; selected: string; correct: string };
 type DifficultyState = { newDifficulty: string; explanation: string } | null;
 
 export default function QuizPage() {
-  const [quizState, setQuizState] = useState<QuizState>('not_started');
+  const [quizState, setQuizState] = useState<QuizStatus>('not_started');
   const [answers, setAnswers] = useState<Record<number, string>>({});
   const [results, setResults] = useState<{ score: number; answers: Answer[] } | null>(null);
   const [difficulty, setDifficulty] = useState<DifficultyState>(null);

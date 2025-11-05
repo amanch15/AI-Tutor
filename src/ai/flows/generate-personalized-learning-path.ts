@@ -22,10 +22,14 @@ export type GeneratePersonalizedLearningPathInput = z.infer<
   typeof GeneratePersonalizedLearningPathInputSchema
 >;
 
+const LearningStepSchema = z.object({
+    title: z.string().describe('The title of the learning step.'),
+    description: z.string().describe('A brief description of what this step covers.'),
+    resources: z.array(z.string()).describe('A list of recommended resources (videos, articles, books) for this step.'),
+});
+
 const GeneratePersonalizedLearningPathOutputSchema = z.object({
-  learningPath: z
-    .string()
-    .describe('A personalized learning path based on the student knowledge and goals.'),
+  learningPath: z.array(LearningStepSchema).describe('A personalized learning path with multiple steps.'),
 });
 
 export type GeneratePersonalizedLearningPathOutput = z.infer<
@@ -45,11 +49,12 @@ const prompt = ai.definePrompt({
   prompt: `You are an expert tutor specialized in creating personalized learning paths for students.
 
   Based on the student's current knowledge and learning goals, generate a detailed and structured learning path.
+  The path should consist of several logical steps. For each step, provide a clear title, a concise description, and a list of 2-3 specific, high-quality learning resources (e.g., 'Video: Khan Academy - Intro to Derivatives', 'Article: Wikipedia - Fundamental Theorem of Calculus', 'Book: "Calculus" by James Stewart, Chapter 3').
 
   Current Knowledge: {{{currentKnowledge}}}
   Learning Goals: {{{learningGoals}}}
 
-  Learning Path:`,
+  Generate the learning path now.`,
 });
 
 const generatePersonalizedLearningPathFlow = ai.defineFlow(
