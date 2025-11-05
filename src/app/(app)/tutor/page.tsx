@@ -6,20 +6,24 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
-import { Bot, Send, User } from 'lucide-react';
+import { Bot, Send, User, ChevronDown } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import Image from 'next/image';
 import { PlaceHolderImages } from '@/lib/placeholder-images';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
 type Message = {
   role: 'user' | 'ai';
   content: string;
 };
 
+type AcademicLevel = 'K-12' | 'College/University' | 'PhD/Professional';
+
 export default function TutorPage() {
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState('');
   const [isPending, setIsPending] = useState(false);
+  const [academicLevel, setAcademicLevel] = useState<AcademicLevel>('College/University');
   
   const avatar = PlaceHolderImages.find(p => p.id === 'user-avatar-1');
 
@@ -33,7 +37,8 @@ export default function TutorPage() {
     setIsPending(true);
 
     try {
-      const result = await provideAiTutoringSupport({ studentRequest: input });
+      const studentRequest = `Academic Level: ${academicLevel}. Question: ${input}`;
+      const result = await provideAiTutoringSupport({ studentRequest });
       const aiMessage: Message = { role: 'ai', content: result.explanation };
       setMessages(prev => [...prev, aiMessage]);
     } catch (error) {
@@ -47,7 +52,19 @@ export default function TutorPage() {
   return (
     <div className="h-[calc(100vh-10rem)] flex flex-col max-w-3xl mx-auto">
       <header className="text-center mb-8">
-        <h1 className="text-4xl font-bold font-headline">AI Tutor</h1>
+        <div className="flex justify-center items-center gap-4 mb-2">
+            <h1 className="text-4xl font-bold font-headline">AI Tutor</h1>
+            <Select value={academicLevel} onValueChange={(value: AcademicLevel) => setAcademicLevel(value)}>
+                <SelectTrigger className="w-auto border-dashed">
+                    <SelectValue placeholder="Select level" />
+                </SelectTrigger>
+                <SelectContent>
+                    <SelectItem value="K-12">K-12</SelectItem>
+                    <SelectItem value="College/University">College/University</SelectItem>
+                    <SelectItem value="PhD/Professional">PhD/Professional</SelectItem>
+                </SelectContent>
+            </Select>
+        </div>
         <p className="text-muted-foreground mt-2">
           Stuck on a problem? Ask me anything!
         </p>
@@ -55,6 +72,12 @@ export default function TutorPage() {
       
       <ScrollArea className="flex-1 mb-4 pr-4">
         <div className="space-y-6">
+          {messages.length === 0 && (
+            <div className="text-center text-muted-foreground p-8">
+                <Bot className="h-12 w-12 mx-auto mb-4" />
+                <p>Ask a question to get started. For example: &quot;Explain quantum entanglement in simple terms.&quot;</p>
+            </div>
+          )}
           {messages.map((message, index) => (
             <div key={index} className={cn('flex items-start gap-4 animate-in fade-in', message.role === 'user' ? 'justify-end' : 'justify-start')}>
               {message.role === 'ai' && (
@@ -62,8 +85,8 @@ export default function TutorPage() {
                   <Bot className="h-5 w-5"/>
                 </Avatar>
               )}
-              <div className={cn('max-w-md rounded-lg p-3 text-sm', message.role === 'user' ? 'bg-primary text-primary-foreground rounded-br-none' : 'bg-secondary rounded-bl-none')}>
-                <p>{message.content}</p>
+              <div className={cn('max-w-prose rounded-lg p-3 text-sm', message.role === 'user' ? 'bg-primary text-primary-foreground rounded-br-none' : 'bg-secondary rounded-bl-none')}>
+                <p className="whitespace-pre-wrap">{message.content}</p>
               </div>
               {message.role === 'user' && avatar && (
                 <Avatar className="h-8 w-8">

@@ -26,6 +26,7 @@ import {
   Settings,
   Users,
   BookImage,
+  User,
 } from 'lucide-react';
 import { usePathname } from 'next/navigation';
 import Link from 'next/link';
@@ -42,6 +43,7 @@ const menuItems = [
   { href: '/quiz', label: 'Quizzes', icon: Sparkles },
   { href: '/storytime', label: 'Storytime', icon: BookImage },
   { href: '/history', label: 'History', icon: History },
+  { href: '/profile', label: 'Profile', icon: User },
 ];
 
 const bottomMenuItems = [
