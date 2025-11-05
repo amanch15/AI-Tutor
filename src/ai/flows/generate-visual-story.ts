@@ -14,6 +14,7 @@ import { z } from 'genkit';
 const StoryPageSchema = z.object({
   text: z.string().describe('The text for this page of the story. Should be simple and easy to understand for a young audience.'),
   imagePrompt: z.string().describe('A detailed prompt for a text-to-image model to generate an illustration for this page. The style should be like a childrens storybook illustration, vibrant and engaging.'),
+  imageUrl: z.string().optional().describe('The URL of the generated image for this page.'),
 });
 
 const GenerateVisualStoryInputSchema = z.object({
@@ -56,7 +57,33 @@ const generateVisualStoryFlow = ai.defineFlow(
     outputSchema: GenerateVisualStoryOutputSchema,
   },
   async (input) => {
-    const { output } = await prompt(input);
-    return output!;
+    const { output: storyData } = await prompt(input);
+    if (!storyData) {
+        throw new Error('Failed to generate story data.');
+    }
+
+    const imageGenerationPromises = storyData.pages.map(async (page) => {
+        try {
+            const { media } = await ai.generate({
+                model: 'googleai/imagen-4.0-fast-generate-001',
+                prompt: page.imagePrompt,
+            });
+            return {
+                ...page,
+                imageUrl: media.url,
+            };
+        } catch (error) {
+            console.error(`Failed to generate image for prompt: "${page.imagePrompt}"`, error);
+            // Return page without image URL if generation fails
+            return page;
+        }
+    });
+
+    const pagesWithImages = await Promise.all(imageGenerationPromises);
+    
+    return {
+        ...storyData,
+        pages: pagesWithImages,
+    };
   }
 );

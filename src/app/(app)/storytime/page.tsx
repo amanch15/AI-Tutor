@@ -1,19 +1,26 @@
 'use client';
 
-import { useActionState } from 'react';
+import { useActionState, useState, useTransition, useEffect, useRef } from 'react';
 import { generateVisualStory, type GenerateVisualStoryOutput } from '@/ai/flows/generate-visual-story';
+import { generateStoryAudio } from '@/ai/flows/generate-story-audio';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious, type CarouselApi } from '@/components/ui/carousel';
-import { Sparkles, Bot, BookImage } from 'lucide-react';
+import { Sparkles, Bot, BookImage, Volume2, Loader, AlertTriangle, Play, Pause } from 'lucide-react';
 import Image from 'next/image';
-import { useEffect, useState } from 'react';
+import { useToast } from '@/hooks/use-toast';
 
-type FormState = GenerateVisualStoryOutput & {
+type StoryPageState = GenerateVisualStoryOutput & {
   error?: string;
 };
+
+type AudioState = {
+  status: 'idle' | 'loading' | 'playing' | 'paused' | 'error';
+  audioDataUri?: string;
+  error?: string;
+}
 
 function SubmitButton({ isPending }: { isPending: boolean }) {
   return (
@@ -32,8 +39,11 @@ export default function StoryTimePage() {
   const [api, setApi] = useState<CarouselApi>();
   const [current, setCurrent] = useState(0);
   const [count, setCount] = useState(0);
+  const { toast } = useToast();
+  const audioRef = useRef<HTMLAudioElement>(null);
 
-  const [state, formAction, isPending] = useActionState<FormState, FormData>(async (prevState, formData) => {
+  const [storyState, formAction, isStoryPending] = useActionState<StoryPageState, FormData>(async (prevState, formData) => {
+    setAudioState({ status: 'idle' });
     try {
       const topic = formData.get('topic') as string;
       if (!topic) {
@@ -41,11 +51,21 @@ export default function StoryTimePage() {
       }
       const result = await generateVisualStory({ topic });
       return result;
-    } catch (e) {
+    } catch (e: any) {
       console.error(e);
+      const errorMessage = e.message.includes('BILLING') 
+        ? 'Image generation is unavailable, but the story was created. Please enable billing to see images.'
+        : 'Failed to generate story. Please try again.';
+      
+      // If partial results are available, show them.
+      if (e.result) {
+        return { ...e.result, error: errorMessage };
+      }
       return { title: '', pages: [], error: 'Failed to generate story. Please try again.' };
     }
   }, { title: '', pages: [] });
+
+  const [audioState, setAudioState] = useState<AudioState>({ status: 'idle' });
 
   useEffect(() => {
     if (!api) return;
@@ -55,6 +75,53 @@ export default function StoryTimePage() {
       setCurrent(api.selectedScrollSnap() + 1);
     });
   }, [api]);
+
+  useEffect(() => {
+    if (storyState.error) {
+      toast({
+        variant: 'destructive',
+        title: 'Something went wrong',
+        description: storyState.error,
+      });
+    }
+  }, [storyState.error, toast]);
+  
+  const handleListen = async () => {
+    if (audioState.status === 'playing') {
+      audioRef.current?.pause();
+      setAudioState(prev => ({...prev, status: 'paused'}));
+      return;
+    }
+
+    if (audioState.status === 'paused' || (audioState.status === 'idle' && audioState.audioDataUri)) {
+      audioRef.current?.play();
+      setAudioState(prev => ({...prev, status: 'playing'}));
+      return;
+    }
+
+    setAudioState({ status: 'loading' });
+    try {
+      const storyText = storyState.pages.map(p => p.text).join('\n');
+      const result = await generateStoryAudio({ storyText });
+      setAudioState({ status: 'playing', audioDataUri: result.audioDataUri });
+    } catch (e: any) {
+      console.error(e);
+      const error = 'Failed to generate audio. Please try again.';
+      setAudioState({ status: 'error', error });
+      toast({ variant: 'destructive', title: 'Audio Generation Failed', description: error });
+    }
+  };
+
+  useEffect(() => {
+    if (audioState.status === 'playing' && audioState.audioDataUri && audioRef.current) {
+        if (audioRef.current.src !== audioState.audioDataUri) {
+            audioRef.current.src = audioState.audioDataUri;
+        }
+        audioRef.current.play().catch(e => console.error("Audio play failed:", e));
+        audioRef.current.onended = () => setAudioState(prev => ({...prev, status: 'idle'}));
+    }
+  }, [audioState]);
+
 
   return (
     <div className="max-w-4xl mx-auto">
@@ -77,38 +144,54 @@ export default function StoryTimePage() {
                 required
               />
             </div>
-            <SubmitButton isPending={isPending} />
+            <SubmitButton isPending={isStoryPending} />
           </form>
         </CardContent>
       </Card>
       
-      {isPending && (
+      {isStoryPending && (
         <div className="flex justify-center items-center flex-col text-center">
           <Bot className="h-12 w-12 text-primary animate-bounce"/>
           <p className="mt-4 text-muted-foreground">Our AI is dreaming up a new story for you...</p>
         </div>
       )}
-
-      {state?.error && <p className="text-destructive text-center mb-4">{state.error}</p>}
       
-      {state?.pages && state.pages.length > 0 && (
-        <div className="animate-in fade-in">
-          <h2 className="text-3xl font-bold font-headline mb-2 text-center">{state.title}</h2>
+      {storyState?.pages && storyState.pages.length > 0 && (
+        <div className="animate-in fade-in space-y-4">
+            <div className="text-center">
+                <h2 className="text-3xl font-bold font-headline mb-2">{storyState.title}</h2>
+                <Button onClick={handleListen} disabled={audioState.status === 'loading'}>
+                    {audioState.status === 'loading' && <Loader className="mr-2 h-4 w-4 animate-spin" />}
+                    {audioState.status === 'playing' && <Pause className="mr-2 h-4 w-4" />}
+                    {audioState.status === 'paused' && <Play className="mr-2 h-4 w-4" />}
+                    {(audioState.status === 'idle' || audioState.status === 'error') && <Volume2 className="mr-2 h-4 w-4" />}
+                    {audioState.status === 'playing' ? 'Pause' : audioState.status === 'paused' ? 'Resume' : 'Listen to Story'}
+                </Button>
+                <audio ref={audioRef} className="hidden" />
+            </div>
+
           <Carousel setApi={setApi} className="w-full">
             <CarouselContent>
-              {state.pages.map((page, index) => (
+              {storyState.pages.map((page, index) => (
                 <CarouselItem key={index}>
                   <Card className="overflow-hidden">
                     <div className="grid md:grid-cols-2">
                       <div className="relative aspect-square bg-secondary flex items-center justify-center">
-                        {/* In a real app, we'd generate this image */}
-                        <Image 
-                           src={`https://picsum.photos/seed/${state.title.replace(/\s/g, '-')}-${index}/600/600`}
+                        {page.imageUrl ? (
+                           <Image 
+                           src={page.imageUrl}
                            alt={page.imagePrompt}
                            fill
                            className="object-cover"
-                           data-ai-hint="story illustration"
+                           unoptimized
                         />
+                        ) : (
+                          <div className='flex flex-col items-center text-muted-foreground text-center p-4'>
+                            <AlertTriangle className='h-8 w-8 mb-2' />
+                            <p className='text-sm font-semibold'>Image generation failed</p>
+                            <p className='text-xs'>Billing may be required.</p>
+                          </div>
+                        )}
                          <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent" />
                       </div>
                       <div className="flex flex-col p-6 md:p-8">
@@ -131,7 +214,7 @@ export default function StoryTimePage() {
         </div>
       )}
 
-      {!isPending && (!state?.pages || state.pages.length === 0) && !state?.error && (
+      {!isStoryPending && (!storyState?.pages || storyState.pages.length === 0) && !storyState.error && (
         <div className="text-center text-muted-foreground p-8 border-2 border-dashed rounded-lg">
             <BookImage className="h-12 w-12 mx-auto text-muted-foreground/50"/>
             <p className="mt-4">Your generated story will appear here.</p>
