@@ -25,6 +25,7 @@ import {
   LifeBuoy,
   Settings,
   Users,
+  BookImage,
 } from 'lucide-react';
 import { usePathname } from 'next/navigation';
 import Link from 'next/link';
@@ -39,6 +40,7 @@ const menuItems = [
   { href: '/games', label: 'Games', icon: Gamepad2 },
   { href: '/resources', label: 'Resources', icon: FolderKanban },
   { href: '/quiz', label: 'Quizzes', icon: Sparkles },
+  { href: '/storytime', label: 'Storytime', icon: BookImage },
   { href: '/history', label: 'History', icon: History },
 ];
 
