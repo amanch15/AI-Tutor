@@ -11,6 +11,7 @@ import {
   SidebarProvider,
   SidebarInset,
   SidebarTrigger,
+  SidebarRail
 } from '@/components/ui/sidebar';
 import {
   BookOpen,
@@ -49,7 +50,8 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
 
   return (
     <SidebarProvider>
-      <Sidebar>
+      <Sidebar collapsible="icon">
+        <SidebarRail />
         <SidebarHeader>
           <Logo />
         </SidebarHeader>
