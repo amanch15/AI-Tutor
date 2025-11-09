@@ -13,13 +13,13 @@ import { GraduationCap } from 'lucide-react';
 
 export default function LoginPage() {
   return (
-    <div className="w-full max-w-4xl mx-auto rounded-lg shadow-2xl grid md:grid-cols-2 overflow-hidden border bg-card/50 backdrop-blur-lg">
-      <div className="hidden md:flex flex-col items-center justify-center bg-primary/10 p-12 text-center border-r">
-          <GraduationCap className="h-24 w-24 text-primary mb-4" />
+    <div className="w-full max-w-4xl mx-auto rounded-lg shadow-2xl grid md:grid-cols-2 overflow-hidden border bg-card/50 backdrop-blur-lg animate-in fade-in zoom-in-95 duration-500">
+      <div className="hidden md:flex flex-col items-center justify-center bg-primary/10 p-12 text-center border-r animate-in fade-in slide-in-from-left-12 duration-700">
+          <GraduationCap className="h-24 w-24 text-primary mb-4 animate-pulse delay-500" />
           <h2 className="text-3xl font-bold font-headline text-primary">Welcome to StudyAI</h2>
           <p className="text-muted-foreground mt-2">Your personal AI-powered learning companion. Let's get started!</p>
       </div>
-      <div className="flex items-center justify-center p-6 sm:p-12">
+      <div className="flex items-center justify-center p-6 sm:p-12 animate-in fade-in slide-in-from-right-12 duration-700">
         <div className="w-full max-w-md">
             <CardHeader className="px-0 pt-0">
                 <CardTitle className="text-3xl font-headline">Login</CardTitle>
