@@ -13,7 +13,7 @@ import {
 } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Loader2 } from 'lucide-react';
+import { Eye, EyeOff, Loader2 } from 'lucide-react';
 import { useAuth, useFirestore } from '@/firebase';
 import { createUserWithEmailAndPassword, updateProfile, GoogleAuthProvider, signInWithPopup } from 'firebase/auth';
 import { doc, setDoc } from 'firebase/firestore';
@@ -36,6 +36,7 @@ export default function SignupPage() {
   const [lastName, setLastName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const [isEmailLoading, setIsEmailLoading] = useState(false);
   const [isGoogleLoading, setIsGoogleLoading] = useState(false);
   const [isTransitioning, startTransition] = useTransition();
@@ -45,9 +46,29 @@ export default function SignupPage() {
   const router = useRouter();
   const { toast } = useToast();
 
+  const validatePassword = (password: string) => {
+    const hasUpperCase = /[A-Z]/.test(password);
+    const hasLowerCase = /[a-z]/.test(password);
+    const hasNumber = /[0-9]/.test(password);
+    return hasUpperCase && hasLowerCase && hasNumber && password.length >= 8;
+  };
+
   const handleSignup = async (event: React.FormEvent) => {
     event.preventDefault();
-    if (!firstName || !lastName || !email || !password) return;
+    if (!firstName || !lastName || !email || !password) {
+      toast({ variant: "destructive", title: "Missing Fields", description: "Please fill out all fields." });
+      return;
+    }
+    if (!validatePassword(password)) {
+      toast({
+        variant: "destructive",
+        title: "Weak Password",
+        description: "Password must be at least 8 characters long and contain an uppercase letter, a lowercase letter, and a number.",
+        duration: 5000,
+      });
+      return;
+    }
+
     setIsEmailLoading(true);
     try {
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
@@ -75,7 +96,8 @@ export default function SignupPage() {
         title: "Sign Up Failed",
         description: error.message || "An unknown error occurred.",
       });
-      setIsEmailLoading(false);
+    } finally {
+        setIsEmailLoading(false);
     }
   };
 
@@ -86,7 +108,6 @@ export default function SignupPage() {
       const userCredential = await signInWithPopup(auth, provider);
       const newUser = userCredential.user;
 
-      // Check if user exists in firestore, if not, create them
       const userDocRef = doc(firestore, 'users', newUser.uid);
       await setDoc(userDocRef, {
         id: newUser.uid,
@@ -94,7 +115,7 @@ export default function SignupPage() {
         email: newUser.email,
         name: newUser.displayName,
         dateJoined: new Date().toISOString(),
-      }, { merge: true }); // Use merge to not overwrite existing data if they login again
+      }, { merge: true });
 
       startTransition(() => {
         router.replace('/dashboard');
@@ -105,6 +126,7 @@ export default function SignupPage() {
         title: "Google Sign-Up Failed",
         description: error.message || "An unknown error occurred.",
       });
+    } finally {
        setIsGoogleLoading(false);
     }
   }
@@ -113,7 +135,7 @@ export default function SignupPage() {
 
   return (
     <div className="w-full max-w-md mx-auto animate-in fade-in-50 duration-500">
-      <Card className="shadow-2xl">
+      <Card className="shadow-2xl bg-card/70 backdrop-blur-sm">
         <CardHeader className="text-center space-y-4">
           <Logo className="mx-auto" />
           <CardTitle className="text-3xl font-bold font-headline">Create an Account</CardTitle>
@@ -148,7 +170,28 @@ export default function SignupPage() {
               </div>
               <div className="grid gap-2">
                 <Label htmlFor="password">Password</Label>
-                <Input id="password" type="password" required value={password} onChange={(e) => setPassword(e.target.value)} disabled={isLoading} />
+                <div className="relative">
+                  <Input 
+                    id="password" 
+                    type={showPassword ? 'text' : 'password'} 
+                    required value={password} 
+                    onChange={(e) => setPassword(e.target.value)} 
+                    disabled={isLoading} />
+                    <Button
+                        type="button"
+                        variant="ghost"
+                        size="icon"
+                        className="absolute right-1 top-1/2 -translate-y-1/2 h-7 w-7 text-muted-foreground"
+                        onClick={() => setShowPassword(prev => !prev)}
+                        disabled={isLoading}
+                        aria-label={showPassword ? 'Hide password' : 'Show password'}
+                    >
+                        {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                    </Button>
+                </div>
+                <p className="text-xs text-muted-foreground">
+                  Must be 8+ characters with uppercase, lowercase, and numbers.
+                </p>
               </div>
               <Button type="submit" disabled={isLoading} className="w-full">
                 {isEmailLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
@@ -161,7 +204,7 @@ export default function SignupPage() {
               <span className="w-full border-t" />
             </div>
             <div className="relative flex justify-center text-xs uppercase">
-              <span className="bg-background px-2 text-muted-foreground">
+              <span className="bg-card px-2 text-muted-foreground">
                 Or sign up with
               </span>
             </div>

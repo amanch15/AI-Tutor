@@ -13,7 +13,7 @@ import {
 } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Loader2 } from 'lucide-react';
+import { Eye, EyeOff, Loader2 } from 'lucide-react';
 import { useAuth } from '@/firebase';
 import { signInWithEmailAndPassword, GoogleAuthProvider, signInWithPopup, sendPasswordResetEmail } from 'firebase/auth';
 import { useToast } from '@/hooks/use-toast';
@@ -33,6 +33,7 @@ function GoogleIcon() {
 export default function LoginPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const [isEmailLoading, setIsEmailLoading] = useState(false);
   const [isGoogleLoading, setIsGoogleLoading] = useState(false);
   const [isTransitioning, startTransition] = useTransition();
@@ -59,6 +60,7 @@ export default function LoginPage() {
           ? 'Invalid email or password. Please try again.' 
           : error.message || 'An unknown error occurred.',
       });
+    } finally {
       setIsEmailLoading(false);
     }
   };
@@ -78,6 +80,7 @@ export default function LoginPage() {
         title: 'Google Login Failed',
         description: error.message || 'An unknown error occurred.',
       });
+    } finally {
       setIsGoogleLoading(false);
     }
   };
@@ -110,7 +113,7 @@ export default function LoginPage() {
 
   return (
     <div className="w-full max-w-md mx-auto animate-in fade-in-50 duration-500">
-      <Card className="shadow-2xl">
+      <Card className="shadow-2xl bg-card/70 backdrop-blur-sm">
         <CardHeader className="text-center space-y-4">
           <Logo className="mx-auto" />
           <CardTitle className="text-3xl font-bold font-headline">Welcome Back</CardTitle>
@@ -140,14 +143,27 @@ export default function LoginPage() {
                     Forgot your password?
                   </button>
                 </div>
-                <Input
-                  id="password"
-                  type="password"
-                  required
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  disabled={isLoading}
-                />
+                <div className="relative">
+                    <Input
+                    id="password"
+                    type={showPassword ? 'text' : 'password'}
+                    required
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    disabled={isLoading}
+                    />
+                    <Button
+                        type="button"
+                        variant="ghost"
+                        size="icon"
+                        className="absolute right-1 top-1/2 -translate-y-1/2 h-7 w-7 text-muted-foreground"
+                        onClick={() => setShowPassword(prev => !prev)}
+                        disabled={isLoading}
+                        aria-label={showPassword ? 'Hide password' : 'Show password'}
+                    >
+                        {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                    </Button>
+                </div>
               </div>
               <Button type="submit" disabled={isLoading} className="w-full">
                 {isEmailLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
@@ -160,7 +176,7 @@ export default function LoginPage() {
               <span className="w-full border-t" />
             </div>
             <div className="relative flex justify-center text-xs uppercase">
-              <span className="bg-background px-2 text-muted-foreground">
+              <span className="bg-card px-2 text-muted-foreground">
                 Or continue with
               </span>
             </div>

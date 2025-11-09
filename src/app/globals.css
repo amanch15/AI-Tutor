@@ -4,41 +4,41 @@
 
 @layer base {
   :root {
-    --background: 220 20% 98%;
+    --background: 0 0% 98%;
     --foreground: 220 15% 15%;
     
-    --card: 220 20% 100%;
+    --card: 0 0% 100%;
     --card-foreground: 220 15% 15%;
     
-    --popover: 220 20% 100%;
+    --popover: 0 0% 100%;
     --popover-foreground: 220 15% 15%;
     
-    --primary: 205 90% 55%; /* Bright Blue */
+    --primary: 21 95% 57%; /* Orange */
     --primary-foreground: 0 0% 100%;
     
-    --secondary: 220 15% 93%;
-    --secondary-foreground: 220 15% 25%;
+    --secondary: 195 91% 90%; /* Light Sky Blue */
+    --secondary-foreground: 195 90% 25%;
     
     --muted: 220 15% 93%;
     --muted-foreground: 220 10% 45%;
     
-    --accent: 220 15% 90%;
-    --accent-foreground: 220 15% 15%;
+    --accent: 35 91% 65%; /* Saffron */
+    --accent-foreground: 24 9.8% 10%;
     
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 0 0% 100%;
     
     --border: 220 15% 90%;
     --input: 220 15% 90%;
-    --ring: 205 90% 55%;
+    --ring: 21 95% 57%;
     
     --radius: 0.8rem;
     
-    --chart-1: 205 90% 55%;
+    --chart-1: 21 95% 57%; /* Orange */
     --chart-2: 35 91% 65%; /* Saffron */
-    --chart-3: 160 80% 45%;
-    --chart-4: 262 88% 66%;
-    --chart-5: 190 80% 50%;
+    --chart-3: 140 80% 45%; /* Green */
+    --chart-4: 195 80% 50%; /* Sky Blue */
+    --chart-5: 262 88% 66%;
   }
 
   .dark {
@@ -51,30 +51,30 @@
     --popover: 220 25% 8%;
     --popover-foreground: 220 15% 90%;
 
-    --primary: 205 90% 65%; /* Bright Blue */
+    --primary: 21 95% 65%; /* Orange */
     --primary-foreground: 220 20% 10%;
 
-    --secondary: 220 25% 20%;
-    --secondary-foreground: 220 15% 90%;
+    --secondary: 195 90% 20%; /* Darker Sky Blue */
+    --secondary-foreground: 195 85% 85%;
 
     --muted: 220 25% 20%;
     --muted-foreground: 220 10% 60%;
 
-    --accent: 220 25% 25%;
-    --accent-foreground: 220 15% 90%;
+    --accent: 35 91% 55%; /* Saffron */
+    --accent-foreground: 0 0% 100%;
     
     --destructive: 0 62.8% 30.6%;
     --destructive-foreground: 0 0% 100%;
     
     --border: 220 25% 20%;
     --input: 220 25% 20%;
-    --ring: 205 90% 65%;
+    --ring: 21 95% 65%;
 
-    --chart-1: 205 90% 65%;
-    --chart-2: 35 91% 65%;
-    --chart-3: 160 80% 55%;
-    --chart-4: 262 88% 76%;
-    --chart-5: 190 80% 60%;
+    --chart-1: 21 95% 65%;
+    --chart-2: 35 91% 55%;
+    --chart-3: 140 80% 55%;
+    --chart-4: 195 80% 60%;
+    --chart-5: 262 88% 76%;
   }
 }
 
@@ -85,7 +85,7 @@
   body {
     @apply bg-background text-foreground;
     background-image: radial-gradient(circle at 15% 25%, hsl(var(--primary) / 0.05), transparent 30%),
-                      radial-gradient(circle at 85% 75%, hsl(var(--primary) / 0.05), transparent 30%);
+                      radial-gradient(circle at 85% 75%, hsl(var(--accent) / 0.05), transparent 30%);
   }
 }
 

@@ -8,22 +8,18 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-  DropdownMenuSub,
-  DropdownMenuSubTrigger,
-  DropdownMenuPortal,
-  DropdownMenuSubContent
 } from '@/components/ui/dropdown-menu';
 import { PlaceHolderImages } from '@/lib/placeholder-images';
 import Link from 'next/link';
 import { useAuth, useUser } from '@/firebase';
-import { Moon, Sun } from 'lucide-react';
+import { Moon, Sun, Settings } from 'lucide-react';
 import { useTheme } from 'next-themes';
 
 export function UserNav() {
   const avatar = PlaceHolderImages.find(p => p.id === 'user-avatar-1');
   const auth = useAuth();
   const { user } = useUser();
-  const { setTheme } = useTheme();
+  const { theme, setTheme } = useTheme();
 
 
   return (
@@ -51,25 +47,19 @@ export function UserNav() {
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
         <DropdownMenuGroup>
-          <DropdownMenuItem>Profile</DropdownMenuItem>
-           <DropdownMenuSub>
-            <DropdownMenuSubTrigger>
-              Theme
-            </DropdownMenuSubTrigger>
-            <DropdownMenuPortal>
-              <DropdownMenuSubContent>
-                <DropdownMenuItem onClick={() => setTheme('light')}>
-                  <Sun className="mr-2 h-4 w-4" />
-                  <span>Light</span>
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => setTheme('dark')}>
-                  <Moon className="mr-2 h-4 w-4" />
-                  <span>Dark</span>
-                </DropdownMenuItem>
-              </DropdownMenuSubContent>
-            </DropdownMenuPortal>
-          </DropdownMenuSub>
-          <DropdownMenuItem>Settings</DropdownMenuItem>
+          <DropdownMenuItem asChild>
+            <Link href="/profile">Profile</Link>
+          </DropdownMenuItem>
+           <DropdownMenuItem onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}>
+              {theme === 'dark' ? <Sun className="mr-2 h-4 w-4" /> : <Moon className="mr-2 h-4 w-4" />}
+              <span>{theme === 'dark' ? 'Light Mode' : 'Dark Mode'}</span>
+            </DropdownMenuItem>
+          <DropdownMenuItem asChild>
+            <Link href="/settings">
+                <Settings className="mr-2 h-4 w-4" />
+                <span>Settings</span>
+            </Link>
+          </DropdownMenuItem>
         </DropdownMenuGroup>
         <DropdownMenuSeparator />
         <DropdownMenuItem onClick={() => auth.signOut()}>

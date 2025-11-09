@@ -41,7 +41,6 @@ const menuItems = [
 ];
 
 const bottomMenuItems = [
-    { href: '/support', label: 'Support', icon: LifeBuoy },
     { href: '/settings', label: 'Settings', icon: Settings },
 ]
 
@@ -83,7 +82,7 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
                   tooltip={item.label}
                   variant="ghost"
                 >
-                  <Link href="#">
+                  <Link href={item.href}>
                     <item.icon />
                     <span>{item.label}</span>
                   </Link>
