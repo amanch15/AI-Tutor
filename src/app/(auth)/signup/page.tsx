@@ -13,9 +13,9 @@ import {
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { GraduationCap, Loader2 } from 'lucide-react';
-import { useAuth, useUser, setDocumentNonBlocking, useFirestore } from '@/firebase';
+import { useAuth, useUser, useFirestore } from '@/firebase';
 import { createUserWithEmailAndPassword, updateProfile } from 'firebase/auth';
-import { doc } from 'firebase/firestore';
+import { doc, setDoc } from 'firebase/firestore';
 import { useToast } from '@/hooks/use-toast';
 
 export default function SignupPage() {
@@ -57,7 +57,7 @@ export default function SignupPage() {
         name: `${firstName} ${lastName}`,
         dateJoined: new Date().toISOString(),
       };
-      setDocumentNonBlocking(userDocRef, userData, { merge: true });
+      await setDoc(userDocRef, userData, { merge: true });
 
       // Don't set loading to false, let the useEffect handle redirect
     } catch (error: any) {

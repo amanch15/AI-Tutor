@@ -42,10 +42,10 @@
   }
 
   .dark {
-    --background: 220 40% 5%;
+    --background: 205 100% 12%;
     --foreground: 210 20% 98%;
 
-    --card: 220 40% 10%;
+    --card: 205 90% 18%;
     --card-foreground: 210 20% 98%;
 
     --popover: 224 71.4% 4.1%;
@@ -54,7 +54,7 @@
     --primary: 35 91% 65%; /* Saffron */
     --primary-foreground: 24 9.8% 10%;
 
-    --secondary: 200 98% 15%; /* Darker Sky Blue */
+    --secondary: 200 98% 25%; /* Darker Sky Blue */
     --secondary-foreground: 210 20% 98%;
 
     --muted: 215 27.9% 16.9%;
