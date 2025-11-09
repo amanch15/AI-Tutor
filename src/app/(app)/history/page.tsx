@@ -8,11 +8,23 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import { historyData } from '@/lib/data';
 import { Badge } from '@/components/ui/badge';
-import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
+import { useCollection, useUser, useMemoFirebase } from '@/firebase';
+import { collection, query } from 'firebase/firestore';
+import { useFirestore } from '@/firebase';
+import type { HistoryItem } from '@/lib/definitions';
 
 export default function HistoryPage() {
+  const { user } = useUser();
+  const firestore = useFirestore();
+
+  const historyQuery = useMemoFirebase(() => 
+    user ? query(collection(firestore, 'users', user.uid, 'history')) : null
+  , [firestore, user]);
+
+  const { data: historyData, isLoading } = useCollection<HistoryItem>(historyQuery);
+
   return (
     <div>
         <header className="mb-8">
@@ -34,7 +46,17 @@ export default function HistoryPage() {
                     </TableRow>
                 </TableHeader>
                 <TableBody>
-                    {historyData.map((item) => (
+                    {isLoading && (
+                        <TableRow>
+                            <TableCell colSpan={5} className="text-center">Loading history...</TableCell>
+                        </TableRow>
+                    )}
+                    {!isLoading && historyData?.length === 0 && (
+                        <TableRow>
+                            <TableCell colSpan={5} className="text-center">No history found.</TableCell>
+                        </TableRow>
+                    )}
+                    {historyData?.map((item) => (
                     <TableRow key={item.id}>
                         <TableCell className="font-medium">{item.activity}</TableCell>
                         <TableCell>
@@ -42,7 +64,7 @@ export default function HistoryPage() {
                             item.type === 'Quiz' ? 'default' : item.type === 'Lesson' ? 'secondary' : 'outline'
                         }>{item.type}</Badge>
                         </TableCell>
-                        <TableCell>{item.date}</TableCell>
+                        <TableCell>{new Date(item.date).toLocaleDateString()}</TableCell>
                         <TableCell>{item.duration}</TableCell>
                         <TableCell className="text-right">{item.score !== undefined ? `${item.score}%` : 'N/A'}</TableCell>
                     </TableRow>

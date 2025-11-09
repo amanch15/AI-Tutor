@@ -1,5 +1,5 @@
 export type WeeklyProgress = {
-  day: string;
+  date: string;
   minutes: number;
 };
 

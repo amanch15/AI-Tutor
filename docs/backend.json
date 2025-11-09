@@ -109,6 +109,45 @@
         "percentageComplete"
       ]
     },
+    "History": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "History",
+      "type": "object",
+      "description": "Represents a user's learning history item.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the history entry."
+        },
+        "userId": {
+          "type": "string",
+          "description": "Reference to the User."
+        },
+        "activity": {
+          "type": "string",
+          "description": "The name of the activity (e.g., 'Algebra Basics')."
+        },
+        "type": {
+          "type": "string",
+          "description": "The type of activity (e.g., 'Quiz', 'Lesson', 'Game').",
+          "enum": ["Quiz", "Lesson", "Game", "AI Quiz"]
+        },
+        "date": {
+          "type": "string",
+          "description": "The date the activity was completed.",
+          "format": "date-time"
+        },
+        "duration": {
+          "type": "string",
+          "description": "The duration of the activity (e.g., '15 min')."
+        },
+        "score": {
+          "type": "number",
+          "description": "The score achieved, if applicable."
+        }
+      },
+      "required": ["id", "userId", "activity", "type", "date", "duration"]
+    },
     "Resource": {
       "$schema": "http://json-schema.org/draft-07/schema#",
       "title": "Resource",
@@ -185,7 +224,7 @@
   "auth": {
     "providers": [
       "password",
-      "anonymous"
+      "google.com"
     ]
   },
   "firestore": {
@@ -242,6 +281,26 @@
             {
               "name": "progressId",
               "description": "The unique identifier of the progress entry."
+            }
+          ]
+        }
+      },
+       {
+        "path": "/users/{userId}/history/{historyId}",
+        "definition": {
+          "entityName": "History",
+          "schema": {
+            "$ref": "#/backend/entities/History"
+          },
+          "description": "Stores learning history for each user. Path-based ownership ensures only the user can access their history.",
+          "params": [
+            {
+              "name": "userId",
+              "description": "The unique identifier of the user."
+            },
+            {
+              "name": "historyId",
+              "description": "The unique identifier of the history entry."
             }
           ]
         }

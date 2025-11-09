@@ -18,20 +18,64 @@ import {
   ResponsiveContainer,
 } from 'recharts';
 import {
-  weeklyProgressData,
   coursesData,
   achievementsData,
 } from '@/lib/data';
 import { Progress } from '@/components/ui/progress';
 import { Button } from '@/components/ui/button';
-import { ArrowRight, Sparkles } from 'lucide-react';
+import { Sparkles } from 'lucide-react';
 import Link from 'next/link';
+import { useCollection, useUser, useMemoFirebase } from '@/firebase';
+import { collection, query, where } from 'firebase/firestore';
+import { useFirestore } from '@/firebase';
+import type { WeeklyProgress } from '@/lib/definitions';
+import { useMemo } from 'react';
+import { format } from 'date-fns';
 
 export default function DashboardPage() {
+  const { user } = useUser();
+  const firestore = useFirestore();
+
+  const progressQuery = useMemoFirebase(() => 
+    user ? query(collection(firestore, 'users', user.uid, 'progress')) : null
+  , [firestore, user]);
+
+  const { data: weeklyProgressData, isLoading } = useCollection<WeeklyProgress>(progressQuery);
+
+  const chartData = useMemo(() => {
+    if (!weeklyProgressData) {
+      return Array(7).fill({ day: '', minutes: 0 });
+    }
+    const week = Array(7).fill(0).map((_, i) => {
+        const d = new Date();
+        d.setDate(d.getDate() - i);
+        return format(d, 'yyyy-MM-dd');
+    }).reverse();
+
+    const progressByDay = weeklyProgressData.reduce((acc, progress) => {
+        const day = progress.date.split('T')[0];
+        if (!acc[day]) {
+            acc[day] = 0;
+        }
+        acc[day] += (progress as any).percentageComplete; // Using percentageComplete as minutes for now
+        return acc;
+    }, {} as Record<string, number>);
+
+    return week.map(dateStr => {
+        const dayOfWeek = format(new Date(dateStr), 'E');
+        return {
+            day: dayOfWeek,
+            minutes: progressByDay[dateStr] || 0,
+        }
+    });
+
+  }, [weeklyProgressData]);
+
+
   return (
     <div className="flex flex-col gap-8 animate-in fade-in">
       <div>
-        <h1 className="text-3xl font-bold font-headline">Welcome back, Alex!</h1>
+        <h1 className="text-3xl font-bold font-headline">Welcome back, {user?.displayName || 'Alex'}!</h1>
         <p className="text-muted-foreground">
           Here&apos;s a snapshot of your learning journey today.
         </p>
@@ -47,7 +91,12 @@ export default function DashboardPage() {
           </CardHeader>
           <CardContent className="h-[300px] w-full">
             <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={weeklyProgressData}>
+             {isLoading ? (
+                <div className="flex items-center justify-center h-full text-muted-foreground">
+                  Loading chart...
+                </div>
+              ) : (
+              <BarChart data={chartData}>
                 <CartesianGrid strokeDasharray="3 3" vertical={false} />
                 <XAxis dataKey="day" stroke="hsl(var(--muted-foreground))" fontSize={12} tickLine={false} axisLine={false} />
                 <YAxis stroke="hsl(var(--muted-foreground))" fontSize={12} tickLine={false} axisLine={false} unit="m" />
@@ -59,6 +108,7 @@ export default function DashboardPage() {
                 />
                 <Bar dataKey="minutes" fill="hsl(var(--primary))" radius={[4, 4, 0, 0]} />
               </BarChart>
+              )}
             </ResponsiveContainer>
           </CardContent>
         </Card>
