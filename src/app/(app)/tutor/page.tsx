@@ -10,6 +10,7 @@ import { Bot, Send, User } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import Image from 'next/image';
 import { useUser } from '@/firebase';
+import { getAvatarColor } from '@/lib/utils';
 
 type Message = {
   role: 'user' | 'ai';
@@ -21,6 +22,7 @@ export default function TutorPage() {
   const [input, setInput] = useState('');
   const [isPending, setIsPending] = useState(false);
   const { user } = useUser();
+  const avatarColor = getAvatarColor(user?.displayName?.charAt(0));
   
   const handleSubmission = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -75,7 +77,9 @@ export default function TutorPage() {
               </div>
               {message.role === 'user' && (
                 <Avatar className="h-8 w-8">
-                  <AvatarFallback>{user?.displayName?.charAt(0)}</AvatarFallback>
+                  <AvatarFallback className={cn('font-bold', avatarColor)}>
+                    {user?.displayName?.charAt(0).toUpperCase()}
+                  </AvatarFallback>
                 </Avatar>
               )}
             </div>

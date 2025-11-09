@@ -13,11 +13,14 @@ import Link from 'next/link';
 import { useAuth, useUser } from '@/firebase';
 import { Moon, Sun } from 'lucide-react';
 import { useTheme } from 'next-themes';
+import { cn } from '@/lib/utils';
+import { getAvatarColor } from '@/lib/utils';
 
 export function UserNav() {
   const auth = useAuth();
   const { user } = useUser();
   const { theme, setTheme } = useTheme();
+  const avatarColor = getAvatarColor(user?.displayName?.charAt(0));
 
   return (
     <DropdownMenu>
@@ -25,7 +28,9 @@ export function UserNav() {
         <Button variant="ghost" className="relative h-8 w-8 rounded-full">
           <Avatar className="h-9 w-9">
             {user?.photoURL && <AvatarImage src={user.photoURL} alt={user.displayName || 'User'} />}
-            <AvatarFallback>{user?.displayName?.charAt(0)}</AvatarFallback>
+            <AvatarFallback className={cn('font-bold', avatarColor)}>
+              {user?.displayName?.charAt(0).toUpperCase()}
+            </AvatarFallback>
           </Avatar>
         </Button>
       </DropdownMenuTrigger>
