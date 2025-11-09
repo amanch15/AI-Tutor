@@ -1,10 +1,41 @@
 'use client';
 
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { useUser } from "@/firebase";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
+import { useUser, useAuth } from "@/firebase";
+import { sendPasswordResetEmail } from "firebase/auth";
+import { Button } from "@/components/ui/button";
+import { useToast } from "@/hooks/use-toast";
+import { Input } from "@/components/ui/input";
 
 export default function SettingsPage() {
     const { user } = useUser();
+    const auth = useAuth();
+    const { toast } = useToast();
+
+    const handlePasswordReset = async () => {
+        if (!user?.email) {
+            toast({
+                variant: 'destructive',
+                title: 'Error',
+                description: 'No email address associated with this account.',
+            });
+            return;
+        }
+
+        try {
+            await sendPasswordResetEmail(auth, user.email);
+            toast({
+                title: 'Password Reset Email Sent',
+                description: `An email has been sent to ${user.email} with instructions to reset your password.`,
+            });
+        } catch (error: any) {
+            toast({
+                variant: 'destructive',
+                title: 'Error',
+                description: error.message || 'Failed to send password reset email.',
+            });
+        }
+    };
 
     return (
         <div className="max-w-4xl mx-auto animate-in fade-in">
@@ -20,26 +51,36 @@ export default function SettingsPage() {
                     <CardHeader>
                         <CardTitle>Profile</CardTitle>
                         <CardDescription>
-                            This is your public information.
+                            This is your public information. It cannot be edited here.
                         </CardDescription>
                     </CardHeader>
-                    <CardContent>
-                        <div className="space-y-2">
-                            <p><strong>Name:</strong> {user?.displayName}</p>
-                            <p><strong>Email:</strong> {user?.email}</p>
-                        </div>
+                    <CardContent className="space-y-4">
+                         <div className="space-y-2">
+                            <label className="text-sm font-medium text-muted-foreground">Name</label>
+                            <Input value={user?.displayName || ''} readOnly />
+                         </div>
+                         <div className="space-y-2">
+                            <label className="text-sm font-medium text-muted-foreground">Email</label>
+                            <Input value={user?.email || ''} readOnly />
+                         </div>
                     </CardContent>
                 </Card>
-                 <Card>
+
+                <Card>
                     <CardHeader>
-                        <CardTitle>Theme</CardTitle>
+                        <CardTitle>Security</CardTitle>
                         <CardDescription>
-                            Customize the look and feel of the application.
+                            Manage your account security settings.
                         </CardDescription>
                     </CardHeader>
                     <CardContent>
-                        <p>Theme settings can be changed from the user menu in the top right.</p>
+                        <p className="text-sm text-muted-foreground">
+                            Click the button below to send a password reset link to your email.
+                        </p>
                     </CardContent>
+                    <CardFooter>
+                        <Button onClick={handlePasswordReset}>Change Password</Button>
+                    </CardFooter>
                 </Card>
             </div>
         </div>
