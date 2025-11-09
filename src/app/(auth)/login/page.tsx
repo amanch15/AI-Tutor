@@ -1,10 +1,11 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useTransition } from 'react';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import {
+  Card,
   CardContent,
   CardDescription,
   CardHeader,
@@ -12,35 +13,53 @@ import {
 } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { GraduationCap, Loader2 } from 'lucide-react';
+import { Loader2 } from 'lucide-react';
 import { useAuth } from '@/firebase';
-import { signInWithEmailAndPassword, GoogleAuthProvider, signInWithPopup } from 'firebase/auth';
+import { signInWithEmailAndPassword, GoogleAuthProvider, signInWithPopup, sendPasswordResetEmail } from 'firebase/auth';
 import { useToast } from '@/hooks/use-toast';
+import { Logo } from '@/components/logo';
+
+function GoogleIcon() {
+  return (
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="24px" height="24px">
+      <path fill="#FFC107" d="M43.611,20.083H42V20H24v8h11.303c-1.649,4.657-6.08,8-11.303,8c-6.627,0-12-5.373-12-12c0-6.627,5.373-12,12-12c3.059,0,5.842,1.154,7.961,3.039l5.657-5.657C34.046,6.053,29.268,4,24,4C12.955,4,4,12.955,4,24c0,11.045,8.955,20,20,20c11.045,0,20-8.955,20-20C44,22.659,43.862,21.35,43.611,20.083z" />
+      <path fill="#FF3D00" d="M6.306,14.691l6.571,4.819C14.655,15.108,18.961,12,24,12c3.059,0,5.842,1.154,7.961,3.039l5.657-5.657C34.046,6.053,29.268,4,24,4C16.318,4,9.656,8.337,6.306,14.691z" />
+      <path fill="#4CAF50" d="M24,44c5.166,0,9.86-1.977,13.409-5.192l-6.19-5.238C29.211,35.091,26.715,36,24,36c-5.223,0-9.61-3.317-11.28-7.946l-6.522,5.025C9.505,39.556,16.227,44,24,44z" />
+á      <path fill="#1976D2" d="M43.611,20.083H42V20H24v8h11.303c-0.792,2.237-2.231,4.166-4.087,5.574l6.19,5.238C39.901,36.625,44,30.636,44,24C44,22.659,43.862,21.35,43.611,20.083z" />
+    </svg>
+  );
+}
 
 export default function LoginPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
+  const [isEmailLoading, setIsEmailLoading] = useState(false);
   const [isGoogleLoading, setIsGoogleLoading] = useState(false);
-
+  const [isTransitioning, startTransition] = useTransition();
   const auth = useAuth();
   const router = useRouter();
+  const searchParams = useSearchParams();
   const { toast } = useToast();
 
   const handleLogin = async (event: React.FormEvent) => {
     event.preventDefault();
     if (!email || !password) return;
-    setIsLoading(true);
+    setIsEmailLoading(true);
     try {
       await signInWithEmailAndPassword(auth, email, password);
-      router.push('/dashboard');
+      startTransition(() => {
+        const from = searchParams.get('from');
+        router.replace(from || '/dashboard');
+      });
     } catch (error: any) {
       toast({
-        variant: "destructive",
-        title: "Login Failed",
-        description: error.message || "An unknown error occurred.",
+        variant: 'destructive',
+        title: 'Login Failed',
+        description: error.code === 'auth/invalid-credential' 
+          ? 'Invalid email or password. Please try again.' 
+          : error.message || 'An unknown error occurred.',
       });
-      setIsLoading(false);
+      setIsEmailLoading(false);
     }
   };
 
@@ -49,82 +68,119 @@ export default function LoginPage() {
     const provider = new GoogleAuthProvider();
     try {
       await signInWithPopup(auth, provider);
-       router.push('/dashboard');
+      startTransition(() => {
+        const from = searchParams.get('from');
+        router.replace(from || '/dashboard');
+      });
+    } catch (error: any) {
+      toast({
+        variant: 'destructive',
+        title: 'Google Login Failed',
+        description: error.message || 'An unknown error occurred.',
+      });
+      setIsGoogleLoading(false);
+    }
+  };
+
+  const handlePasswordReset = async () => {
+    if (!email) {
+      toast({
+        title: 'Email Required',
+        description: 'Please enter your email address to reset your password.',
+        variant: 'destructive',
+      });
+      return;
+    }
+    try {
+      await sendPasswordResetEmail(auth, email);
+      toast({
+        title: 'Password Reset Email Sent',
+        description: `An email has been sent to ${email} with instructions to reset your password.`,
+      });
     } catch (error: any) {
        toast({
-        variant: "destructive",
-        title: "Google Login Failed",
-        description: error.message || "An unknown error occurred.",
+        title: 'Error',
+        description: error.message || 'Failed to send password reset email.',
+        variant: 'destructive',
       });
-       setIsGoogleLoading(false);
     }
-  }
+  };
+  
+  const isLoading = isEmailLoading || isGoogleLoading || isTransitioning;
 
   return (
-    <div className="w-full max-w-4xl mx-auto rounded-lg shadow-2xl grid md:grid-cols-2 overflow-hidden border bg-card/50 backdrop-blur-lg animate-in fade-in zoom-in-95 duration-500">
-      <div className="hidden md:flex flex-col items-center justify-center bg-sky-100 dark:bg-accent/10 p-12 text-center border-r">
-          <div className='p-4 bg-gradient-to-br from-primary to-orange-400 rounded-full shadow-lg mb-6'>
-            <GraduationCap className="h-20 w-20 text-white transform -rotate-12" />
-          </div>
-          <h2 className="text-3xl font-bold font-headline text-primary">Welcome to StudyAI</h2>
-          <p className="text-muted-foreground mt-2">Your personal AI-powered learning companion. Let's get started!</p>
-      </div>
-      <div className="flex items-center justify-center p-6 sm:p-12 animate-in fade-in slide-in-from-right-12 duration-700">
-        <div className="w-full max-w-md">
-            <CardHeader className="px-0 pt-0">
-                <CardTitle className="text-3xl font-headline text-primary">Login</CardTitle>
-                <CardDescription>
-                Enter your email below to login to your account
-                </CardDescription>
-            </CardHeader>
-            <CardContent className="px-0 pb-0">
-              <form onSubmit={handleLogin}>
-                <div className="grid gap-4">
-                  <div className="grid gap-2">
-                      <Label htmlFor="email">Email</Label>
-                      <Input
-                      id="email"
-                      type="email"
-                      placeholder="m@example.com"
-                      required
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
-                      />
-                  </div>
-                  <div className="grid gap-2">
-                      <div className="flex items-center">
-                      <Label htmlFor="password">Password</Label>
-                      <Link href="#" className="ml-auto inline-block text-sm text-accent hover:text-primary underline">
-                          Forgot your password?
-                      </Link>
-                      </div>
-                      <Input 
-                        id="password" 
-                        type="password" 
-                        required 
-                        value={password}
-                        onChange={(e) => setPassword(e.target.value)}
-                      />
-                  </div>
-                  <Button type="submit" disabled={isLoading || isGoogleLoading} className="w-full">
-                      {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                      Login
-                  </Button>
-                  <Button variant="outline" onClick={handleGoogleLogin} disabled={isLoading || isGoogleLoading} className="w-full">
-                      {isGoogleLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                      Login with Google
-                  </Button>
-                </div>
-              </form>
-              <div className="mt-4 text-center text-sm">
-                  Don&apos;t have an account?{' '}
-                  <Link href="/signup" className="underline text-accent hover:text-primary">
-                      Sign up
-                  </Link>
+    <div className="w-full max-w-md mx-auto animate-in fade-in-50 duration-500">
+      <Card className="shadow-2xl">
+        <CardHeader className="text-center space-y-4">
+          <Logo className="mx-auto" />
+          <CardTitle className="text-3xl font-bold font-headline">Welcome Back</CardTitle>
+          <CardDescription>
+            Enter your credentials to access your account.
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <form onSubmit={handleLogin} className="animate-in fade-in-50 slide-in-from-bottom-5 duration-700 delay-300">
+            <div className="grid gap-4">
+              <div className="grid gap-2">
+                <Label htmlFor="email">Email</Label>
+                <Input
+                  id="email"
+                  type="email"
+                  placeholder="m@example.com"
+                  required
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  disabled={isLoading}
+                />
               </div>
-            </CardContent>
-        </div>
-      </div>
+              <div className="grid gap-2">
+                <div className="flex items-center">
+                  <Label htmlFor="password">Password</Label>
+                  <button type="button" onClick={handlePasswordReset} className="ml-auto inline-block text-sm text-primary/80 hover:text-primary underline">
+                    Forgot your password?
+                  </button>
+                </div>
+                <Input
+                  id="password"
+                  type="password"
+                  required
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  disabled={isLoading}
+                />
+              </div>
+              <Button type="submit" disabled={isLoading} className="w-full">
+                {isEmailLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                Login
+              </Button>
+            </div>
+          </form>
+           <div className="relative my-4 animate-in fade-in-50 slide-in-from-bottom-5 duration-700 delay-400">
+            <div className="absolute inset-0 flex items-center">
+              <span className="w-full border-t" />
+            </div>
+            <div className="relative flex justify-center text-xs uppercase">
+              <span className="bg-background px-2 text-muted-foreground">
+                Or continue with
+              </span>
+            </div>
+          </div>
+          <Button variant="outline" onClick={handleGoogleLogin} disabled={isLoading} className="w-full animate-in fade-in-50 slide-in-from-bottom-5 duration-700 delay-500">
+            {isGoogleLoading ? (
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+            ) : (
+              <GoogleIcon />
+            )}
+            Google
+          </Button>
+          <div className="mt-4 text-center text-sm animate-in fade-in-50 slide-in-from-bottom-5 duration-700 delay-600">
+            Don&apos;t have an account?{' '}
+            <Link href="/signup" className="underline text-primary/80 hover:text-primary">
+              Sign up
+            </Link>
+          </div>
+        </CardContent>
+      </Card>
     </div>
   );
 }

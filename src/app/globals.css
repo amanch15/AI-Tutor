@@ -4,77 +4,77 @@
 
 @layer base {
   :root {
-    --background: 210 40% 98%;
-    --foreground: 224 71.4% 4.1%;
+    --background: 220 20% 98%;
+    --foreground: 220 15% 15%;
     
-    --card: 210 40% 100%;
-    --card-foreground: 224 71.4% 4.1%;
+    --card: 220 20% 100%;
+    --card-foreground: 220 15% 15%;
     
-    --popover: 210 40% 100%;
-    --popover-foreground: 224 71.4% 4.1%;
+    --popover: 220 20% 100%;
+    --popover-foreground: 220 15% 15%;
     
-    --primary: 24 94% 53%; /* Saffron/Orange */
+    --primary: 205 90% 55%; /* Bright Blue */
     --primary-foreground: 0 0% 100%;
     
-    --secondary: 200 100% 97%; /* Light Sky Blue */
-    --secondary-foreground: 24 94% 53%;
+    --secondary: 220 15% 93%;
+    --secondary-foreground: 220 15% 25%;
     
-    --muted: 210 40% 96.1%;
-    --muted-foreground: 215.4 16.3% 46.9%;
+    --muted: 220 15% 93%;
+    --muted-foreground: 220 10% 45%;
     
-    --accent: 200 98% 49%; /* Sky Blue */
-    --accent-foreground: 210 40% 98%;
+    --accent: 220 15% 90%;
+    --accent-foreground: 220 15% 15%;
     
     --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 40% 98%;
+    --destructive-foreground: 0 0% 100%;
     
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 24 94% 53%;
+    --border: 220 15% 90%;
+    --input: 220 15% 90%;
+    --ring: 205 90% 55%;
     
     --radius: 0.8rem;
     
-    --chart-1: 24 94% 53%; /* Orange */
-    --chart-2: 200 98% 49%; /* Sky Blue */
-    --chart-3: 35 91% 65%; /* Lighter Saffron */
-    --chart-4: 262 88% 66%; /* Violet */
-    --chart-5: 190 80% 50%; /* Cyan */
+    --chart-1: 205 90% 55%;
+    --chart-2: 35 91% 65%; /* Saffron */
+    --chart-3: 160 80% 45%;
+    --chart-4: 262 88% 66%;
+    --chart-5: 190 80% 50%;
   }
 
   .dark {
-    --background: 205 100% 12%;
-    --foreground: 210 20% 98%;
+    --background: 220 25% 10%;
+    --foreground: 220 15% 90%;
 
-    --card: 205 90% 18%;
-    --card-foreground: 210 20% 98%;
+    --card: 220 25% 14%;
+    --card-foreground: 220 15% 90%;
 
-    --popover: 224 71.4% 4.1%;
-    --popover-foreground: 210 20% 98%;
+    --popover: 220 25% 8%;
+    --popover-foreground: 220 15% 90%;
 
-    --primary: 35 91% 65%; /* Saffron */
-    --primary-foreground: 24 9.8% 10%;
+    --primary: 205 90% 65%; /* Bright Blue */
+    --primary-foreground: 220 20% 10%;
 
-    --secondary: 200 98% 25%; /* Darker Sky Blue */
-    --secondary-foreground: 210 20% 98%;
+    --secondary: 220 25% 20%;
+    --secondary-foreground: 220 15% 90%;
 
-    --muted: 215 27.9% 16.9%;
-    --muted-foreground: 217.9 10.6% 64.9%;
+    --muted: 220 25% 20%;
+    --muted-foreground: 220 10% 60%;
 
-    --accent: 200 98% 49%; /* Sky Blue */
-    --accent-foreground: 210 20% 98%;
+    --accent: 220 25% 25%;
+    --accent-foreground: 220 15% 90%;
     
     --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 210 20% 98%;
+    --destructive-foreground: 0 0% 100%;
     
-    --border: 215 27.9% 16.9%;
-    --input: 215 27.9% 16.9%;
-    --ring: 35 91% 65%;
+    --border: 220 25% 20%;
+    --input: 220 25% 20%;
+    --ring: 205 90% 65%;
 
-    --chart-1: 24 94% 53%;
-    --chart-2: 200 98% 49%;
-    --chart-3: 35 91% 65%;
-    --chart-4: 262 88% 66%;
-    --chart-5: 190 80% 50%;
+    --chart-1: 205 90% 65%;
+    --chart-2: 35 91% 65%;
+    --chart-3: 160 80% 55%;
+    --chart-4: 262 88% 76%;
+    --chart-5: 190 80% 60%;
   }
 }
 
@@ -84,14 +84,14 @@
   }
   body {
     @apply bg-background text-foreground;
-    background-image: radial-gradient(circle at 25% 25%, hsl(var(--primary) / 0.1), rgba(255, 255, 255, 0) 40%),
-                      radial-gradient(circle at 75% 75%, hsl(var(--accent) / 0.08), rgba(255, 255, 255, 0) 40%);
+    background-image: radial-gradient(circle at 15% 25%, hsl(var(--primary) / 0.05), transparent 30%),
+                      radial-gradient(circle at 85% 75%, hsl(var(--primary) / 0.05), transparent 30%);
   }
 }
 
-@layer utilities {
-    .animate-pulse {
-        animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+@layer components {
+    .animate-pulse-slow {
+        animation: pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite;
     }
 
     @keyframes pulse {
@@ -100,8 +100,8 @@
             filter: brightness(100%);
         }
         50% {
-            transform: scale(1.1);
-            filter: brightness(120%);
+            transform: scale(1.05);
+            filter: brightness(110%);
         }
     }
 }
