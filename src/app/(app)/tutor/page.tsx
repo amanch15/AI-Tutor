@@ -1,16 +1,17 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { provideAiTutoringSupport } from '@/ai/flows/provide-ai-tutoring-support';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
-import { Bot, Send, User } from 'lucide-react';
+import { Bot, Send, User, Paperclip, Camera, X } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import Image from 'next/image';
 import { useUser } from '@/firebase';
 import { getAvatarColor } from '@/lib/utils';
+import { useToast } from '@/hooks/use-toast';
 
 type Message = {
   role: 'user' | 'ai';
@@ -23,10 +24,24 @@ export default function TutorPage() {
   const [isPending, setIsPending] = useState(false);
   const { user } = useUser();
   const avatarColor = getAvatarColor(user?.displayName?.charAt(0));
-  
+  const { toast } = useToast();
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [attachment, setAttachment] = useState<{ uri: string, type: string } | null>(null);
+
+  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        setAttachment({ uri: e.target?.result as string, type: file.type });
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
   const handleSubmission = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    if (!input.trim()) return;
+    if (!input.trim() && !attachment) return;
 
     const userMessage: Message = { role: 'user', content: input };
     setMessages(prev => [...prev, userMessage]);
@@ -35,14 +50,26 @@ export default function TutorPage() {
 
     try {
       const studentRequest = `Question: ${input}`;
-      const result = await provideAiTutoringSupport({ studentRequest });
+      const result = await provideAiTutoringSupport({ 
+        studentRequest,
+        attachmentDataUri: attachment?.uri
+      });
       const aiMessage: Message = { role: 'ai', content: result.explanation };
       setMessages(prev => [...prev, aiMessage]);
     } catch (error) {
       const errorMessage: Message = { role: 'ai', content: 'Sorry, I encountered an error. Please try again.' };
       setMessages(prev => [...prev, errorMessage]);
+      toast({
+        variant: "destructive",
+        title: "Tutor Error",
+        description: "There was a problem getting a response from the AI tutor."
+      })
     } finally {
       setIsPending(false);
+      setAttachment(null);
+      if(fileInputRef.current) {
+        fileInputRef.current.value = "";
+      }
     }
   };
 
@@ -53,7 +80,7 @@ export default function TutorPage() {
             <h1 className="text-4xl font-bold font-headline">AI Tutor</h1>
         </div>
         <p className="text-muted-foreground mt-2">
-          Stuck on a problem? Ask me anything!
+          Stuck on a problem? Ask me anything! Upload a file or take a picture.
         </p>
       </header>
       
@@ -102,7 +129,29 @@ export default function TutorPage() {
       </ScrollArea>
       
       <div className="mt-auto bg-background/80 backdrop-blur-sm p-2 rounded-lg border">
-        <form onSubmit={handleSubmission} className="flex items-center gap-2">
+         {attachment && (
+          <div className="p-2 relative">
+            <Image
+              src={attachment.uri}
+              alt="Attachment preview"
+              width={80}
+              height={80}
+              className="rounded-md object-cover"
+            />
+            <Button
+              variant="ghost"
+              size="icon"
+              className="absolute top-0 right-0 h-6 w-6 rounded-full bg-destructive/80 text-destructive-foreground hover:bg-destructive"
+              onClick={() => {
+                setAttachment(null);
+                if (fileInputRef.current) fileInputRef.current.value = "";
+              }}
+            >
+              <X className="h-4 w-4" />
+            </Button>
+          </div>
+        )}
+        <form onSubmit={handleSubmission} className="flex items-center gap-1">
           <Input
             value={input}
             onChange={(e) => setInput(e.target.value)}
@@ -110,7 +159,28 @@ export default function TutorPage() {
             className="flex-1 bg-transparent border-none focus-visible:ring-0 focus-visible:ring-offset-0"
             disabled={isPending}
           />
-          <Button type="submit" size="icon" disabled={isPending || !input.trim()}>
+          <input
+            type="file"
+            ref={fileInputRef}
+            onChange={handleFileChange}
+            className="hidden"
+            id="file-upload"
+          />
+           <input
+            type="file"
+            accept="image/*"
+            capture="environment"
+            onChange={handleFileChange}
+            className="hidden"
+            id="camera-upload"
+          />
+          <Button type="button" size="icon" variant="ghost" onClick={() => document.getElementById('camera-upload')?.click()} disabled={isPending}>
+            <Camera className="h-5 w-5" />
+          </Button>
+          <Button type="button" size="icon" variant="ghost" onClick={() => document.getElementById('file-upload')?.click()} disabled={isPending}>
+            <Paperclip className="h-5 w-5" />
+          </Button>
+          <Button type="submit" size="icon" disabled={isPending || (!input.trim() && !attachment)}>
             <Send className="h-4 w-4" />
           </Button>
         </form>
