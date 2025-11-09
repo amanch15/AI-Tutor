@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
@@ -24,15 +24,9 @@ export default function LoginPage() {
   const [isGoogleLoading, setIsGoogleLoading] = useState(false);
 
   const auth = useAuth();
-  const { user, isUserLoading } = useUser();
+  const { isUserLoading } = useUser();
   const router = useRouter();
   const { toast } = useToast();
-
-  useEffect(() => {
-    if (user && !isUserLoading) {
-      router.push('/dashboard');
-    }
-  }, [user, isUserLoading, router]);
 
   const handleLogin = async (event: React.FormEvent) => {
     event.preventDefault();
@@ -40,14 +34,14 @@ export default function LoginPage() {
     setIsLoading(true);
     try {
       await signInWithEmailAndPassword(auth, email, password);
-      // Let the useEffect handle the redirect
+      router.push('/dashboard');
     } catch (error: any) {
       toast({
         variant: "destructive",
         title: "Login Failed",
         description: error.message || "An unknown error occurred.",
       });
-      setIsLoading(false); // Only set loading to false on error
+      setIsLoading(false);
     }
   };
 
@@ -56,18 +50,18 @@ export default function LoginPage() {
     const provider = new GoogleAuthProvider();
     try {
       await signInWithPopup(auth, provider);
-      // Let the useEffect handle the redirect
+       router.push('/dashboard');
     } catch (error: any) {
        toast({
         variant: "destructive",
         title: "Google Login Failed",
         description: error.message || "An unknown error occurred.",
       });
-       setIsGoogleLoading(false); // Only set loading to false on error
+       setIsGoogleLoading(false);
     }
   }
 
-  if (isUserLoading || user) {
+  if (isUserLoading) {
     return (
         <div className="flex h-screen w-full items-center justify-center">
              <Loader2 className="h-8 w-8 animate-spin text-primary" />

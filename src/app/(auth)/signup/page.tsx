@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
@@ -27,15 +27,9 @@ export default function SignupPage() {
   
   const auth = useAuth();
   const firestore = useFirestore();
-  const { user, isUserLoading } = useUser();
+  const { isUserLoading } = useUser();
   const router = useRouter();
   const { toast } = useToast();
-
-  useEffect(() => {
-    if (user && !isUserLoading) {
-      router.push('/dashboard');
-    }
-  }, [user, isUserLoading, router]);
 
   const handleSignup = async (event: React.FormEvent) => {
     event.preventDefault();
@@ -59,7 +53,7 @@ export default function SignupPage() {
       };
       await setDoc(userDocRef, userData, { merge: true });
 
-      // Don't set loading to false, let the useEffect handle redirect
+      router.push('/dashboard');
     } catch (error: any) {
       toast({
         variant: "destructive",
@@ -70,7 +64,7 @@ export default function SignupPage() {
     }
   };
 
-  if (isUserLoading || user) {
+  if (isUserLoading) {
     return (
         <div className="flex h-screen w-full items-center justify-center">
              <Loader2 className="h-8 w-8 animate-spin text-primary" />
