@@ -13,7 +13,7 @@ import {
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { GraduationCap, Loader2 } from 'lucide-react';
-import { useAuth, useUser } from '@/firebase';
+import { useAuth } from '@/firebase';
 import { signInWithEmailAndPassword, GoogleAuthProvider, signInWithPopup } from 'firebase/auth';
 import { useToast } from '@/hooks/use-toast';
 
@@ -24,7 +24,6 @@ export default function LoginPage() {
   const [isGoogleLoading, setIsGoogleLoading] = useState(false);
 
   const auth = useAuth();
-  const { isUserLoading } = useUser();
   const router = useRouter();
   const { toast } = useToast();
 
@@ -59,14 +58,6 @@ export default function LoginPage() {
       });
        setIsGoogleLoading(false);
     }
-  }
-
-  if (isUserLoading) {
-    return (
-        <div className="flex h-screen w-full items-center justify-center">
-             <Loader2 className="h-8 w-8 animate-spin text-primary" />
-        </div>
-    );
   }
 
   return (

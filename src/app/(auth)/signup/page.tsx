@@ -13,7 +13,7 @@ import {
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { GraduationCap, Loader2 } from 'lucide-react';
-import { useAuth, useUser, useFirestore } from '@/firebase';
+import { useAuth, useFirestore } from '@/firebase';
 import { createUserWithEmailAndPassword, updateProfile } from 'firebase/auth';
 import { doc, setDoc } from 'firebase/firestore';
 import { useToast } from '@/hooks/use-toast';
@@ -27,7 +27,6 @@ export default function SignupPage() {
   
   const auth = useAuth();
   const firestore = useFirestore();
-  const { isUserLoading } = useUser();
   const router = useRouter();
   const { toast } = useToast();
 
@@ -51,7 +50,7 @@ export default function SignupPage() {
         name: `${firstName} ${lastName}`,
         dateJoined: new Date().toISOString(),
       };
-      await setDoc(userDocRef, userData, { merge: true });
+      await setDoc(userDocRef, userData);
 
       router.push('/dashboard');
     } catch (error: any) {
@@ -63,14 +62,6 @@ export default function SignupPage() {
       setIsLoading(false);
     }
   };
-
-  if (isUserLoading) {
-    return (
-        <div className="flex h-screen w-full items-center justify-center">
-             <Loader2 className="h-8 w-8 animate-spin text-primary" />
-        </div>
-    );
-  }
 
   return (
     <div className="w-full max-w-4xl mx-auto rounded-lg shadow-2xl grid md:grid-cols-2 overflow-hidden border bg-card/50 backdrop-blur-lg animate-in fade-in zoom-in-95 duration-500">
