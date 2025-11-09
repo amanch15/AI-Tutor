@@ -7,7 +7,6 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Sparkles, Bot, BookOpen, Video, Newspaper } from 'lucide-react';
-import { cn } from '@/lib/utils';
 import Link from 'next/link';
 
 type FormState = GeneratePersonalizedLearningPathOutput & {
@@ -40,6 +39,16 @@ const getIconForResource = (resource: string) => {
     }
     return <BookOpen className="h-4 w-4 text-accent-foreground" />;
   };
+
+const pinColors = [
+    'bg-pink-500',
+    'bg-teal-500',
+    'bg-purple-500',
+    'bg-orange-500',
+    'bg-sky-500',
+    'bg-rose-500',
+    'bg-green-500',
+];
 
 export default function LearningPathPage() {
   const [state, formAction, isPending] = useActionState<FormState, FormData>(async (prevState, formData) => {
@@ -107,34 +116,48 @@ export default function LearningPathPage() {
       
       {state?.learningPath && state.learningPath.length > 0 && (
         <div>
-            <h2 className="text-3xl font-bold font-headline mb-6 text-center">Your Personalized Path</h2>
-            <div className="relative pl-6 after:absolute after:inset-y-0 after:left-12 after:w-px after:bg-border">
-            {state.learningPath.map((step, index) => (
-                <div key={index} className="relative group grid md:grid-cols-[4rem_1fr] gap-x-6 gap-y-2 mb-8 animate-in fade-in" style={{ animationFillMode: 'backwards', animationDelay: `${index * 150}ms` }}>
-                    <div className="flex items-center justify-center h-16 w-16 rounded-full bg-secondary border-4 border-background absolute left-0 -translate-x-1/2 md:relative md:left-auto md:translate-x-0">
-                        <span className="text-xl font-bold font-headline text-primary">{index + 1}</span>
-                    </div>
-                    <Card className="md:col-start-2 bg-card/50 backdrop-blur-sm hover:shadow-lg transition-shadow">
-                        <CardHeader>
-                        <CardTitle className="font-headline text-xl">{step.title}</CardTitle>
-                        <CardDescription>{step.description}</CardDescription>
-                        </CardHeader>
-                        <CardContent>
-                            <h4 className="font-semibold mb-3">Recommended Resources</h4>
-                            <div className="grid gap-3">
-                                {step.resources.map((resource, resIndex) => (
-                                    <Link href="#" key={resIndex} className="group/resource flex items-center gap-3 p-2 rounded-md hover:bg-secondary/50">
-                                        <div className="flex items-center justify-center h-8 w-8 rounded-full bg-accent text-accent-foreground">
-                                            {getIconForResource(resource)}
-                                        </div>
-                                        <p className="text-sm font-medium text-muted-foreground group-hover/resource:text-foreground">{resource}</p>
-                                    </Link>
-                                ))}
+            <h2 className="text-3xl font-bold font-headline mb-12 text-center">Your Personalized Roadmap</h2>
+            <div className="flow-root">
+                <ul className="-mb-8">
+                {state.learningPath.map((step, index) => (
+                    <li key={index} className="animate-in fade-in" style={{ animationFillMode: 'backwards', animationDelay: `${index * 250}ms` }}>
+                    <div className="relative pb-8">
+                        {index !== state.learningPath.length - 1 ? (
+                        <span className="absolute left-9 top-9 -ml-px h-full w-0.5 bg-border" aria-hidden="true" />
+                        ) : null}
+                        <div className="relative flex items-start space-x-6">
+                            {/* Pin */}
+                            <div className="relative">
+                                <div className={`h-18 w-18 ${pinColors[index % pinColors.length]} rounded-full flex items-center justify-center text-white ring-8 ring-background`}>
+                                    <div className="text-center">
+                                        <div className="font-bold text-2xl">{index + 1}</div>
+                                    </div>
+                                </div>
                             </div>
-                        </CardContent>
-                    </Card>
-                </div>
-            ))}
+                             <Card className="flex-1 bg-card/50 backdrop-blur-sm hover:shadow-lg transition-shadow min-w-0">
+                                <CardHeader>
+                                <CardTitle className="font-headline text-xl">{step.title}</CardTitle>
+                                <CardDescription>{step.description}</CardDescription>
+                                </CardHeader>
+                                <CardContent>
+                                    <h4 className="font-semibold mb-3">Recommended Resources</h4>
+                                    <div className="grid gap-3">
+                                        {step.resources.map((resource, resIndex) => (
+                                            <Link href="#" key={resIndex} className="group/resource flex items-center gap-3 p-2 rounded-md hover:bg-secondary/50">
+                                                <div className="flex items-center justify-center h-8 w-8 rounded-full bg-accent text-accent-foreground">
+                                                    {getIconForResource(resource)}
+                                                </div>
+                                                <p className="text-sm font-medium text-muted-foreground group-hover/resource:text-foreground">{resource}</p>
+                                            </Link>
+                                        ))}
+                                    </div>
+                                </CardContent>
+                            </Card>
+                        </div>
+                    </div>
+                    </li>
+                ))}
+                </ul>
             </div>
         </div>
       )}
