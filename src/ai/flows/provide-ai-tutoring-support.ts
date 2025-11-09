@@ -18,11 +18,11 @@ const ProvideAiTutoringSupportInputSchema = z.object({
 export type ProvideAiTutoringSupportInput = z.infer<typeof ProvideAiTutoringSupportInputSchema>;
 
 const ProvideAiTutoringSupportOutputSchema = z.object({
-  explanation: z.string().describe('The AI explanation and support provided to the student.'),
+  explanation: z.string().describe('The AI explanation and support provided to the student, formatted in clean markdown.'),
 });
 export type ProvideAiTutoringSupportOutput = z.infer<typeof ProvideAiTutoringSupportOutputSchema>;
 
-export async function provideAiTutoringSupport(input: ProvideAiTutoringSupportInput): Promise<ProvideAiTutoringSupportOutput> {
+export async function provideAiTutoringSupport(input: ProvideAiTutoringSupportInput): Promise<ProvideAiTuturingSupportOutput> {
   return provideAiTutoringSupportFlow(input);
 }
 
@@ -30,7 +30,7 @@ const prompt = ai.definePrompt({
   name: 'provideAiTutoringSupportPrompt',
   input: {schema: ProvideAiTutoringSupportInputSchema},
   output: {schema: ProvideAiTutoringSupportOutputSchema},
-  prompt: `You are an expert AI tutor. A student needs help, and you must provide a clear, accurate, and helpful explanation. Your response should be well-structured and formatted using markdown, like Gemini. Use headings, lists, bold text, and code blocks where appropriate to make the explanation as clear and readable as possible.
+  prompt: `You are an expert AI tutor. A student needs help, and you must provide a clear, accurate, and helpful explanation. Your response should be well-structured and formatted using clean, standard markdown. Use headings, lists, bold text, and code blocks where appropriate to make the explanation as clear and readable as possible.
 
   If an image or file is attached, analyze it as the primary context for the student's question and provide an answer based on the contents of the attachment.
   
@@ -49,7 +49,7 @@ const prompt = ai.definePrompt({
   Attachment: {{media url=attachmentDataUri}}
   {{/if}}
 
-  Provide your explanation now using rich markdown formatting.`,
+  Provide your explanation now using rich markdown formatting. Do not use raw asterisks or hashtags; use proper markdown syntax.`,
 });
 
 const provideAiTutoringSupportFlow = ai.defineFlow(

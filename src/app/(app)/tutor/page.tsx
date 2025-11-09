@@ -16,7 +16,25 @@ import { useToast } from '@/hooks/use-toast';
 type Message = {
   role: 'user' | 'ai';
   content: string;
+  attachmentUri?: string;
 };
+
+// A simple markdown to HTML converter
+const MarkdownContent = ({ content }: { content: string }) => {
+    const html = content
+        .replace(/^### (.*$)/gim, '<h3>$1</h3>')
+        .replace(/^## (.*$)/gim, '<h2>$1</h2>')
+        .replace(/^# (.*$)/gim, '<h1>$1</h1>')
+        .replace(/\*\*(.*)\*\*/gim, '<strong>$1</strong>')
+        .replace(/\*(.*)\*/gim, '<em>$1</em>')
+        .replace(/```(\w*)\n([\s\S]*?)```/gim, '<pre><code class="language-$1">$2</code></pre>')
+        .replace(/^\* (.*$)/gim, '<ul><li>$1</li></ul>') // Basic list support
+        .replace(/\n/g, '<br />')
+        .replace(/<\/ul><br \/><ul>/g, ''); // Fix for consecutive list items
+
+  return <div className="prose prose-sm prose-invert" dangerouslySetInnerHTML={{ __html: html }} />;
+};
+
 
 export default function TutorPage() {
   const [messages, setMessages] = useState<Message[]>([]);
@@ -43,16 +61,22 @@ export default function TutorPage() {
     event.preventDefault();
     if (!input.trim() && !attachment) return;
 
-    const userMessage: Message = { role: 'user', content: input };
+    const userMessage: Message = { 
+        role: 'user', 
+        content: input,
+        attachmentUri: attachment?.uri
+    };
     setMessages(prev => [...prev, userMessage]);
+    
     setInput('');
+    setAttachment(null);
     setIsPending(true);
 
     try {
       const studentRequest = `Question: ${input}`;
       const result = await provideAiTutoringSupport({ 
         studentRequest,
-        attachmentDataUri: attachment?.uri
+        attachmentDataUri: userMessage.attachmentUri
       });
       const aiMessage: Message = { role: 'ai', content: result.explanation };
       setMessages(prev => [...prev, aiMessage]);
@@ -66,7 +90,6 @@ export default function TutorPage() {
       })
     } finally {
       setIsPending(false);
-      setAttachment(null);
       if(fileInputRef.current) {
         fileInputRef.current.value = "";
       }
@@ -100,7 +123,20 @@ export default function TutorPage() {
                 </Avatar>
               )}
               <div className={cn('max-w-prose rounded-lg p-3 text-sm shadow-md', message.role === 'user' ? 'bg-primary text-primary-foreground rounded-br-none' : 'bg-card rounded-bl-none')}>
-                <div className="prose prose-sm prose-invert" dangerouslySetInnerHTML={{ __html: message.content.replace(/```(\w*)\n([\s\S]*?)```/g, '<pre><code class="language-$1">$2</code></pre>').replace(/\n/g, '<br />') }} />
+                {message.attachmentUri && (
+                    <Image 
+                        src={message.attachmentUri} 
+                        alt="User attachment"
+                        width={200}
+                        height={200}
+                        className="rounded-md object-cover mb-2"
+                    />
+                )}
+                {message.role === 'user' ? (
+                  <p>{message.content}</p>
+                ) : (
+                  <MarkdownContent content={message.content} />
+                )}
               </div>
               {message.role === 'user' && (
                 <Avatar className="h-8 w-8">
