@@ -80,17 +80,17 @@ export default function SignupPage() {
 
   return (
     <div className="w-full max-w-4xl mx-auto rounded-lg shadow-2xl grid md:grid-cols-2 overflow-hidden border bg-card/50 backdrop-blur-lg animate-in fade-in zoom-in-95 duration-500">
-       <div className="hidden md:flex flex-col items-center justify-center bg-sky-100 dark:bg-sky-900/20 p-12 text-center border-r border-sky-200 dark:border-sky-800 animate-in fade-in slide-in-from-left-12 duration-700">
-          <div className='p-4 bg-gradient-to-br from-saffron-400 to-orange-500 rounded-full shadow-lg mb-6'>
+       <div className="hidden md:flex flex-col items-center justify-center bg-sky-100 dark:bg-accent/10 p-12 text-center border-r">
+          <div className='p-4 bg-gradient-to-br from-primary to-orange-400 rounded-full shadow-lg mb-6'>
             <GraduationCap className="h-20 w-20 text-white transform -rotate-12" />
           </div>
-          <h2 className="text-3xl font-bold font-headline text-saffron-900 dark:text-saffron-100">Create Your Account</h2>
-          <p className="text-sky-800/70 dark:text-sky-200/70 mt-2">Join our learning community and start your personalized journey.</p>
+          <h2 className="text-3xl font-bold font-headline text-primary">Create Your Account</h2>
+          <p className="text-muted-foreground mt-2">Join our learning community and start your personalized journey.</p>
       </div>
       <div className="flex items-center justify-center p-6 sm:p-12 animate-in fade-in slide-in-from-right-12 duration-700">
         <div className="w-full max-w-md">
             <CardHeader className="px-0 pt-0">
-                <CardTitle className="text-3xl font-headline text-saffron-900 dark:text-saffron-100">Sign Up</CardTitle>
+                <CardTitle className="text-3xl font-headline text-primary">Sign Up</CardTitle>
                 <CardDescription>
                 Enter your information to create an account
                 </CardDescription>
@@ -123,7 +123,7 @@ export default function SignupPage() {
                             <Label htmlFor="password">Password</Label>
                             <Input id="password" type="password" required value={password} onChange={(e) => setPassword(e.target.value)} />
                         </div>
-                        <Button type="submit" disabled={isLoading} className="w-full bg-orange-500 hover:bg-orange-600 text-white dark:bg-orange-600 dark:hover:bg-orange-700">
+                        <Button type="submit" disabled={isLoading} className="w-full">
                             {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                             Create an account
                         </Button>
@@ -131,7 +131,7 @@ export default function SignupPage() {
                 </form>
                 <div className="mt-4 text-center text-sm">
                 Already have an account?{' '}
-                <Link href="/login" className="underline text-sky-600 hover:text-saffron-600">
+                <Link href="/login" className="underline text-accent hover:text-primary">
                     Login
                 </Link>
                 </div>
