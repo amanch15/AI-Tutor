@@ -1,4 +1,8 @@
+'use client';
+
+import { useState } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import {
   Card,
@@ -9,9 +13,20 @@ import {
 } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { GraduationCap } from 'lucide-react';
+import { GraduationCap, Loader2 } from 'lucide-react';
 
 export default function LoginPage() {
+  const [isLoading, setIsLoading] = useState(false);
+  const router = useRouter();
+
+  const handleLogin = () => {
+    setIsLoading(true);
+    // Simulate a network request
+    setTimeout(() => {
+      router.push('/dashboard');
+    }, 1000);
+  };
+
   return (
     <div className="w-full max-w-4xl mx-auto rounded-lg shadow-2xl grid md:grid-cols-2 overflow-hidden border bg-card/50 backdrop-blur-lg animate-in fade-in zoom-in-95 duration-500">
       <div className="hidden md:flex flex-col items-center justify-center bg-primary/10 p-12 text-center border-r animate-in fade-in slide-in-from-left-12 duration-700">
@@ -47,8 +62,9 @@ export default function LoginPage() {
                     </div>
                     <Input id="password" type="password" required />
                 </div>
-                <Button type="submit" className="w-full" asChild>
-                    <Link href="/dashboard">Login</Link>
+                <Button onClick={handleLogin} disabled={isLoading} className="w-full">
+                    {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                    Login
                 </Button>
                 <Button variant="outline" className="w-full">
                     Login with Google
