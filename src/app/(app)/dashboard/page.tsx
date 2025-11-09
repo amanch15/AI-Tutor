@@ -31,7 +31,7 @@ import { useFirestore } from '@/firebase';
 import type { WeeklyProgress } from '@/lib/definitions';
 import { useMemo } from 'react';
 import { format } from 'date-fns';
-import { ChartConfig, ChartContainer, ChartTooltipContent } from '@/components/ui/chart';
+import { ChartConfig, ChartContainer, ChartTooltip, ChartTooltipContent } from '@/components/ui/chart';
 
 
 export default function DashboardPage() {
