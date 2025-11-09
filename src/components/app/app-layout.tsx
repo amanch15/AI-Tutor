@@ -11,7 +11,9 @@ import {
   SidebarProvider,
   SidebarInset,
   SidebarTrigger,
-  SidebarRail
+  SidebarRail,
+  SidebarFooter,
+  useSidebar,
 } from '@/components/ui/sidebar';
 import {
   BookOpen,
@@ -21,13 +23,15 @@ import {
   LayoutDashboard,
   MessageCircle,
   Sparkles,
-  LifeBuoy,
   Settings,
   BookImage,
+  ChevronLeft,
 } from 'lucide-react';
 import { usePathname } from 'next/navigation';
 import Link from 'next/link';
 import { UserNav } from './user-nav';
+import { cn } from '@/lib/utils';
+import { Button } from '@/components/ui/button';
 
 const menuItems = [
   { href: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
@@ -43,6 +47,29 @@ const menuItems = [
 const bottomMenuItems = [
     { href: '/settings', label: 'Settings', icon: Settings },
 ]
+
+function SidebarToggleButton() {
+    const { state, toggleSidebar } = useSidebar();
+  
+    return (
+      <Button
+        variant="ghost"
+        size="icon"
+        className="shrink-0 transition-transform duration-300"
+        onClick={() => toggleSidebar()}
+      >
+        <ChevronLeft
+          className={cn(
+            'h-5 w-5 transition-transform duration-300',
+            state === 'collapsed' && 'rotate-180'
+          )}
+        />
+        <span className="sr-only">
+          {state === 'expanded' ? 'Collapse sidebar' : 'Expand sidebar'}
+        </span>
+      </Button>
+    );
+  }
 
 export function AppLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
@@ -91,8 +118,11 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
             ))}
           </SidebarMenu>
         </SidebarContent>
+        <SidebarFooter className="group-data-[collapsible=icon]:hidden flex-row border-t -mx-1 p-2 items-center">
+            <SidebarToggleButton />
+        </SidebarFooter>
       </Sidebar>
-      <SidebarInset>
+      <SidebarInset className="flex flex-col">
         <header className="flex h-16 items-center gap-4 border-b bg-background/50 backdrop-blur-sm px-6 sticky top-0 z-30">
             <SidebarTrigger className="md:hidden" />
             <div className="flex-1">
@@ -100,7 +130,7 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
             </div>
             <UserNav />
         </header>
-        <main className="flex-1 p-4 md:p-6 lg:p-8">{children}</main>
+        <main className="flex-1 overflow-y-auto p-4 md:p-6 lg:p-8">{children}</main>
       </SidebarInset>
     </SidebarProvider>
   );
