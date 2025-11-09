@@ -55,7 +55,7 @@ function SidebarToggleButton() {
       <Button
         variant="ghost"
         size="icon"
-        className="shrink-0 transition-transform duration-300"
+        className="shrink-0"
         onClick={() => toggleSidebar()}
       >
         <ChevronLeft
@@ -118,17 +118,21 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
             ))}
           </SidebarMenu>
         </SidebarContent>
-        <SidebarFooter className="group-data-[collapsible=icon]:hidden flex-row border-t -mx-1 p-2 items-center">
-            <SidebarToggleButton />
-        </SidebarFooter>
+        {/* Footer is removed to place button in header */}
       </Sidebar>
-      <SidebarInset className="flex flex-col">
-        <header className="flex h-16 items-center gap-4 border-b bg-background/50 backdrop-blur-sm px-6 sticky top-0 z-30">
+      <SidebarInset className="flex flex-col h-screen">
+        <header className="flex h-16 shrink-0 items-center gap-4 border-b bg-background/50 backdrop-blur-sm px-6 sticky top-0 z-30">
             <SidebarTrigger className="md:hidden" />
             <div className="flex-1">
                 {/* Optional Header Title */}
             </div>
-            <UserNav />
+            <div className="hidden md:flex items-center gap-x-2">
+              <SidebarToggleButton />
+              <UserNav />
+            </div>
+            <div className="md:hidden">
+              <UserNav />
+            </div>
         </header>
         <main className="flex-1 overflow-y-auto p-4 md:p-6 lg:p-8">{children}</main>
       </SidebarInset>
