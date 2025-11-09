@@ -29,8 +29,9 @@ const MarkdownContent = ({ content }: { content: string }) => {
         .replace(/\*(.*)\*/gim, '<em>$1</em>')
         .replace(/```(\w*)\n([\s\S]*?)```/gim, '<pre><code class="language-$1">$2</code></pre>')
         .replace(/^\* (.*$)/gim, '<ul><li>$1</li></ul>') // Basic list support
+        .replace(/<\/ul>\n<ul>/g, '') // Fix for consecutive list items
         .replace(/\n/g, '<br />')
-        .replace(/<\/ul><br \/><ul>/g, ''); // Fix for consecutive list items
+        .replace(/<\/ul><br \/>/g, '</ul>'); 
 
   return <div className="prose prose-sm prose-invert" dangerouslySetInnerHTML={{ __html: html }} />;
 };
@@ -142,7 +143,7 @@ export default function TutorPage() {
                   <MarkdownContent content={message.content} />
                 )}
               </div>
-              {message.role === 'user' && (
+              {message.role === 'user' && user && (
                 <Avatar className="h-8 w-8">
                   <AvatarFallback className={cn('font-bold', avatarColor)}>
                     {user?.displayName?.charAt(0).toUpperCase()}
@@ -228,3 +229,5 @@ export default function TutorPage() {
     </div>
   );
 }
+
+    
