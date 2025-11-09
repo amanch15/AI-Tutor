@@ -100,7 +100,7 @@ export default function TutorPage() {
                 </Avatar>
               )}
               <div className={cn('max-w-prose rounded-lg p-3 text-sm shadow-md', message.role === 'user' ? 'bg-primary text-primary-foreground rounded-br-none' : 'bg-card rounded-bl-none')}>
-                <p className="whitespace-pre-wrap">{message.content}</p>
+                <div className="prose prose-sm prose-invert" dangerouslySetInnerHTML={{ __html: message.content.replace(/```(\w*)\n([\s\S]*?)```/g, '<pre><code class="language-$1">$2</code></pre>').replace(/\n/g, '<br />') }} />
               </div>
               {message.role === 'user' && (
                 <Avatar className="h-8 w-8">
