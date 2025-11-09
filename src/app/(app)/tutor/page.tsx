@@ -172,13 +172,14 @@ export default function TutorPage() {
       <div className="mt-auto bg-background/80 backdrop-blur-sm p-2 rounded-lg border">
          {attachment && (
           <div className="p-2 relative">
-            <Image
-              src={attachment.uri}
-              alt="Attachment preview"
-              width={80}
-              height={80}
-              className="rounded-md object-cover"
-            />
+            <div className="relative h-24 w-24">
+                <Image
+                src={attachment.uri}
+                alt="Attachment preview"
+                fill
+                className="rounded-md object-cover"
+                />
+            </div>
             <Button
               variant="ghost"
               size="icon"
