@@ -9,14 +9,14 @@ import {
   CardFooter,
 } from '@/components/ui/card';
 import {
-  BarChart,
   Bar,
+  BarChart,
+  ResponsiveContainer,
   XAxis,
   YAxis,
-  CartesianGrid,
   Tooltip,
-  ResponsiveContainer,
-} from 'recharts';
+  CartesianGrid
+} from "recharts"
 import {
   coursesData,
   achievementsData,
@@ -31,6 +31,8 @@ import { useFirestore } from '@/firebase';
 import type { WeeklyProgress } from '@/lib/definitions';
 import { useMemo } from 'react';
 import { format } from 'date-fns';
+import { ChartConfig, ChartContainer, ChartTooltipContent } from '@/components/ui/chart';
+
 
 export default function DashboardPage() {
   const { user } = useUser();
@@ -42,9 +44,37 @@ export default function DashboardPage() {
 
   const { data: weeklyProgressData, isLoading } = useCollection<WeeklyProgress>(progressQuery);
 
-  const chartData = useMemo(() => {
+  const {chartData, chartConfig} = useMemo(() => {
+    const chartConfig = {
+      minutes: {
+        label: "Minutes",
+      },
+      day: {
+        label: "Day",
+      },
+      saf: {
+        label: "Saffron",
+        color: "hsl(var(--chart-2))",
+      },
+      sky: {
+        label: "Sky Blue",
+        color: "hsl(var(--chart-4))",
+      },
+      orange: {
+        label: "Orange",
+        color: "hsl(var(--chart-1))",
+      },
+      green: {
+        label: "Green",
+        color: "hsl(var(--chart-3))",
+      },
+    } satisfies ChartConfig
+
     if (!weeklyProgressData) {
-      return Array(7).fill({ day: '', minutes: 0 });
+      return { 
+        chartData: Array(7).fill({ day: '', minutes: 0 }),
+        chartConfig: chartConfig
+      };
     }
     const week = Array(7).fill(0).map((_, i) => {
         const d = new Date();
@@ -57,17 +87,22 @@ export default function DashboardPage() {
         if (!acc[day]) {
             acc[day] = 0;
         }
-        acc[day] += (progress as any).percentageComplete; // Using percentageComplete as minutes for now
+        acc[day] += (progress as any).percentageComplete;
         return acc;
     }, {} as Record<string, number>);
 
-    return week.map(dateStr => {
+    const colors = ["orange", "saf", "sky", "green"];
+
+    const data = week.map((dateStr, index) => {
         const dayOfWeek = format(new Date(dateStr), 'E');
         return {
             day: dayOfWeek,
             minutes: progressByDay[dateStr] || 0,
+            fill: `var(--color-${colors[index % colors.length]})`
         }
     });
+
+    return { chartData: data, chartConfig };
 
   }, [weeklyProgressData]);
 
@@ -75,7 +110,7 @@ export default function DashboardPage() {
   return (
     <div className="flex flex-col gap-8 animate-in fade-in">
       <div>
-        <h1 className="text-3xl font-bold font-headline">Welcome back, {user?.displayName || 'Alex'}!</h1>
+        <h1 className="text-3xl font-bold font-headline">Welcome back, {user?.displayName}!</h1>
         <p className="text-muted-foreground">
           Here&apos;s a snapshot of your learning journey today.
         </p>
@@ -90,26 +125,29 @@ export default function DashboardPage() {
             </CardDescription>
           </CardHeader>
           <CardContent className="h-[300px] w-full">
-            <ResponsiveContainer width="100%" height="100%">
-             {isLoading ? (
-                <div className="flex items-center justify-center h-full text-muted-foreground">
-                  Loading chart...
-                </div>
-              ) : (
-              <BarChart data={chartData}>
-                <CartesianGrid strokeDasharray="3 3" vertical={false} />
-                <XAxis dataKey="day" stroke="hsl(var(--muted-foreground))" fontSize={12} tickLine={false} axisLine={false} />
-                <YAxis stroke="hsl(var(--muted-foreground))" fontSize={12} tickLine={false} axisLine={false} unit="m" />
-                <Tooltip
-                  contentStyle={{
-                    backgroundColor: 'hsl(var(--background))',
-                    borderColor: 'hsl(var(--border))',
-                  }}
+            <ChartContainer config={chartConfig} className="w-full h-full">
+              <BarChart accessibilityLayer data={chartData}>
+                <CartesianGrid vertical={false} />
+                <XAxis
+                  dataKey="day"
+                  tickLine={false}
+                  tickMargin={10}
+                  axisLine={false}
+                  tickFormatter={(value) => value.slice(0, 3)}
                 />
-                <Bar dataKey="minutes" fill="hsl(var(--primary))" radius={[4, 4, 0, 0]} />
+                <YAxis
+                    tickLine={false}
+                    axisLine={false}
+                    tickMargin={10}
+                    unit="m"
+                />
+                <ChartTooltip
+                  cursor={false}
+                  content={<ChartTooltipContent indicator="dot" />}
+                />
+                <Bar dataKey="minutes" radius={4} />
               </BarChart>
-              )}
-            </ResponsiveContainer>
+            </ChartContainer>
           </CardContent>
         </Card>
 

@@ -9,7 +9,7 @@ import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Bot, Send, User } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import Image from 'next/image';
-import { PlaceHolderImages } from '@/lib/placeholder-images';
+import { useUser } from '@/firebase';
 
 type Message = {
   role: 'user' | 'ai';
@@ -20,9 +20,8 @@ export default function TutorPage() {
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState('');
   const [isPending, setIsPending] = useState(false);
+  const { user } = useUser();
   
-  const avatar = PlaceHolderImages.find(p => p.id === 'user-avatar-1');
-
   const handleSubmission = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     if (!input.trim()) return;
@@ -74,12 +73,9 @@ export default function TutorPage() {
               <div className={cn('max-w-prose rounded-lg p-3 text-sm shadow-md', message.role === 'user' ? 'bg-primary text-primary-foreground rounded-br-none' : 'bg-card rounded-bl-none')}>
                 <p className="whitespace-pre-wrap">{message.content}</p>
               </div>
-              {message.role === 'user' && avatar && (
+              {message.role === 'user' && (
                 <Avatar className="h-8 w-8">
-                  <div className="relative h-full w-full">
-                    <Image src={avatar.imageUrl} alt="User" fill className="object-cover" data-ai-hint={avatar.imageHint} />
-                  </div>
-                  <AvatarFallback><User className="h-5 w-5" /></AvatarFallback>
+                  <AvatarFallback>{user?.displayName?.charAt(0)}</AvatarFallback>
                 </Avatar>
               )}
             </div>
