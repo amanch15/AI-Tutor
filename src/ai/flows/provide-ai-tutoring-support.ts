@@ -30,7 +30,7 @@ const prompt = ai.definePrompt({
   name: 'provideAiTutoringSupportPrompt',
   input: {schema: ProvideAiTutoringSupportInputSchema},
   output: {schema: ProvideAiTutoringSupportOutputSchema},
-  prompt: `You are an expert AI tutor. A student needs help, and you must provide a clear, accurate, and helpful explanation.
+  prompt: `You are an expert AI tutor. A student needs help, and you must provide a clear, accurate, and helpful explanation. Your response should be well-structured and formatted using markdown, like Gemini. Use headings, lists, bold text, and code blocks where appropriate to make the explanation as clear and readable as possible.
 
   If an image or file is attached, analyze it as the primary context for the student's question and provide an answer based on the contents of the attachment.
   
@@ -49,7 +49,7 @@ const prompt = ai.definePrompt({
   Attachment: {{media url=attachmentDataUri}}
   {{/if}}
 
-  Provide your explanation now.`,
+  Provide your explanation now using rich markdown formatting.`,
 });
 
 const provideAiTutoringSupportFlow = ai.defineFlow(
