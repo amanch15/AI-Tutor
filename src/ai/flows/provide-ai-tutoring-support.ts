@@ -10,10 +10,16 @@
 import {ai} from '@/ai/genkit';
 import {z} from 'genkit';
 
+const ChatMessageSchema = z.object({
+  role: z.enum(['user', 'ai']),
+  content: z.string(),
+});
+
 const ProvideAiTutoringSupportInputSchema = z.object({
   studentRequest: z.string().describe('The student request for tutoring support. This may include the academic level, e.g., K-12, College, PhD.'),
   learningContent: z.string().optional().describe('Built-in learning content that may be relevant to the request.'),
   attachmentDataUri: z.string().optional().describe("An optional attachment (image, etc) as a data URI. Expected format: 'data:<mimetype>;base64,<encoded_data>'."),
+  chatHistory: z.array(ChatMessageSchema).optional().describe('The history of the conversation so far.'),
 });
 export type ProvideAiTutoringSupportInput = z.infer<typeof ProvideAiTutoringSupportInputSchema>;
 
@@ -22,7 +28,7 @@ const ProvideAiTutoringSupportOutputSchema = z.object({
 });
 export type ProvideAiTutoringSupportOutput = z.infer<typeof ProvideAiTutoringSupportOutputSchema>;
 
-export async function provideAiTutoringSupport(input: ProvideAiTutoringSupportInput): Promise<ProvideAiTuturingSupportOutput> {
+export async function provideAiTutoringSupport(input: ProvideAiTutoringSupportInput): Promise<ProvideAiTutoringSupportOutput> {
   return provideAiTutoringSupportFlow(input);
 }
 
@@ -38,6 +44,15 @@ const prompt = ai.definePrompt({
   - For K-12, use simple language, analogies, and a very encouraging tone.
   - For College/University, provide a more detailed and structured explanation, assuming some foundational knowledge.
   - For PhD/Professional, offer a nuanced, in-depth analysis, referencing complex concepts and potential areas of further research.
+
+  Review the conversation history to understand the full context of the student's request.
+
+  {{#if chatHistory}}
+  Conversation History:
+  {{#each chatHistory}}
+  - {{role}}: {{content}}
+  {{/each}}
+  {{/if}}
 
   Student Request (including academic level): {{{studentRequest}}}
 

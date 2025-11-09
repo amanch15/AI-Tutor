@@ -66,7 +66,8 @@ export default function TutorPage() {
         content: input,
         attachmentUri: attachment?.uri
     };
-    setMessages(prev => [...prev, userMessage]);
+    const newMessages = [...messages, userMessage];
+    setMessages(newMessages);
     
     setInput('');
     setAttachment(null);
@@ -74,9 +75,12 @@ export default function TutorPage() {
 
     try {
       const studentRequest = `Question: ${input}`;
+      const chatHistoryForAI = newMessages.filter(m => m.role !== 'user' || m.content).map(m => ({ role: m.role, content: m.content }));
+
       const result = await provideAiTutoringSupport({ 
         studentRequest,
-        attachmentDataUri: userMessage.attachmentUri
+        attachmentDataUri: userMessage.attachmentUri,
+        chatHistory: chatHistoryForAI,
       });
       const aiMessage: Message = { role: 'ai', content: result.explanation };
       setMessages(prev => [...prev, aiMessage]);
