@@ -14,6 +14,8 @@ import {
   SidebarRail,
   SidebarFooter,
   useSidebar,
+  SidebarGroup,
+  SidebarGroupLabel,
 } from '@/components/ui/sidebar';
 import {
   BookOpen,
@@ -26,6 +28,7 @@ import {
   Settings,
   BookImage,
   ChevronLeft,
+  Briefcase,
 } from 'lucide-react';
 import { usePathname } from 'next/navigation';
 import Link from 'next/link';
@@ -43,6 +46,10 @@ const menuItems = [
   { href: '/resources', label: 'Resources', icon: FolderKanban },
   { href: '/history', label: 'History', icon: History },
 ];
+
+const coachMenuItems = [
+    { href: '/coach', label: 'Resume & Interview', icon: Briefcase },
+]
 
 const bottomMenuItems = [
     { href: '/settings', label: 'Settings', icon: Settings },
@@ -99,6 +106,26 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
               </SidebarMenuItem>
             ))}
           </SidebarMenu>
+            <SidebarGroup>
+                <SidebarGroupLabel>Resume & Interview Coach</SidebarGroupLabel>
+                <SidebarMenu>
+                    {coachMenuItems.map((item) => (
+                    <SidebarMenuItem key={item.href}>
+                        <SidebarMenuButton
+                        asChild
+                        isActive={pathname === item.href}
+                        tooltip={item.label}
+                        variant="ghost"
+                        >
+                        <Link href={item.href}>
+                            <item.icon />
+                            <span>{item.label}</span>
+                        </Link>
+                        </SidebarMenuButton>
+                    </SidebarMenuItem>
+                    ))}
+                </SidebarMenu>
+            </SidebarGroup>
 
           <SidebarMenu className="mt-auto">
              {bottomMenuItems.map((item) => (
