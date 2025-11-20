@@ -44,17 +44,14 @@ const menuItems = [
   { href: '/storytime', label: 'AI Storyteller', icon: BookImage },
   { href: '/games', label: 'Games', icon: Gamepad2 },
   { href: '/resources', label: 'Resources', icon: FolderKanban },
+  { href: '/coach', label: 'Resume & Interview', icon: Briefcase },
 ];
 
-const coachMenuItems = [
-    { href: '/coach', label: 'Resume & Interview', icon: Briefcase },
-]
-
 const mainBottomMenuItems = [
-    { href: '/history', label: 'History', icon: History },
 ]
 
 const bottomMenuItems = [
+    { href: '/history', label: 'History', icon: History },
     { href: '/settings', label: 'Settings', icon: Settings },
 ]
 
@@ -109,27 +106,6 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
               </SidebarMenuItem>
             ))}
           </SidebarMenu>
-            <SidebarGroup>
-                <SidebarGroupLabel>Career Tools</SidebarGroupLabel>
-                <SidebarMenu>
-                    {coachMenuItems.map((item) => (
-                    <SidebarMenuItem key={item.href}>
-                        <SidebarMenuButton
-                        asChild
-                        isActive={pathname === item.href}
-                        tooltip={item.label}
-                        variant="ghost"
-                        >
-                        <Link href={item.href}>
-                            <item.icon />
-                            <span>{item.label}</span>
-                        </Link>
-                        </SidebarMenuButton>
-                    </SidebarMenuItem>
-                    ))}
-                </SidebarMenu>
-            </SidebarGroup>
-
           <SidebarMenu className="mt-auto">
              {mainBottomMenuItems.map((item) => (
               <SidebarMenuItem key={item.href}>
