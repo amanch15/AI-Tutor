@@ -1,6 +1,6 @@
 'use client';
 
-import { useActionState, useState, useTransition, useEffect, useRef } from 'react';
+import { useActionState, useState, useEffect, useRef } from 'react';
 import { generateVisualStory, type GenerateVisualStoryOutput } from '@/ai/flows/generate-visual-story';
 import { generateStoryAudio } from '@/ai/flows/generate-story-audio';
 import { Button } from '@/components/ui/button';
@@ -19,6 +19,7 @@ type AudioState = {
   status: 'idle' | 'loading' | 'playing' | 'paused' | 'error';
   audioDataUri?: string;
   error?: string;
+  currentPage: number;
 }
 
 function SubmitButton({ isPending }: { isPending: boolean }) {
@@ -42,7 +43,7 @@ export default function StoryTimePage() {
   const audioRef = useRef<HTMLAudioElement>(null);
 
   const [storyState, formAction, isStoryPending] = useActionState<StoryPageState, FormData>(async (prevState, formData) => {
-    setAudioState({ status: 'idle' });
+    setAudioState({ status: 'idle', currentPage: -1 });
     try {
       const topic = formData.get('topic') as string;
       if (!topic) {
@@ -58,16 +59,26 @@ export default function StoryTimePage() {
     }
   }, { title: '', pages: [] });
 
-  const [audioState, setAudioState] = useState<AudioState>({ status: 'idle' });
+  const [audioState, setAudioState] = useState<AudioState>({ status: 'idle', currentPage: -1 });
+  const [isReadingAloud, setIsReadingAloud] = useState(false);
 
   useEffect(() => {
     if (!api) return;
     setCount(api.scrollSnapList().length);
     setCurrent(api.selectedScrollSnap() + 1);
     api.on('select', () => {
-      setCurrent(api.selectedScrollSnap() + 1);
+      const newPage = api.selectedScrollSnap() + 1;
+      setCurrent(newPage);
+      // If reading aloud, automatically fetch audio for the new page
+      if (isReadingAloud) {
+        handlePagePlayback(newPage - 1);
+      } else {
+        // If not reading aloud, just pause any existing audio
+        audioRef.current?.pause();
+        setAudioState(prev => ({...prev, status: 'paused'}));
+      }
     });
-  }, [api]);
+  }, [api, isReadingAloud]);
 
   useEffect(() => {
     if (storyState.error) {
@@ -79,41 +90,64 @@ export default function StoryTimePage() {
     }
   }, [storyState.error, toast]);
   
-  const handleListen = async () => {
-    if (audioState.status === 'playing') {
-      audioRef.current?.pause();
-      setAudioState(prev => ({...prev, status: 'paused'}));
-      return;
+  const handlePagePlayback = async (pageIndex: number) => {
+    if (pageIndex < 0 || pageIndex >= storyState.pages.length) {
+        setIsReadingAloud(false);
+        return;
     }
 
-    if (audioState.status === 'paused' || (audioState.status === 'idle' && audioState.audioDataUri)) {
-      audioRef.current?.play();
-      setAudioState(prev => ({...prev, status: 'playing'}));
-      return;
-    }
-
-    setAudioState({ status: 'loading' });
+    setAudioState({ status: 'loading', currentPage: pageIndex });
     try {
-      const storyText = storyState.pages.map(p => p.text).join('\n');
-      const result = await generateStoryAudio({ storyText });
-      setAudioState({ status: 'playing', audioDataUri: result.audioDataUri });
+      const pageText = storyState.pages[pageIndex].text;
+      const result = await generateStoryAudio({ storyText: pageText });
+      setAudioState({ status: 'playing', audioDataUri: result.audioDataUri, currentPage: pageIndex });
     } catch (e: any) {
       console.error(e);
-      const error = 'Failed to generate audio. Please try again.';
-      setAudioState({ status: 'error', error });
+      const error = 'Failed to generate audio for this page. Please try again.';
+      setAudioState({ status: 'error', error, currentPage: pageIndex });
       toast({ variant: 'destructive', title: 'Audio Generation Failed', description: error });
+      setIsReadingAloud(false);
+    }
+  };
+
+  const handleListen = () => {
+    if (isReadingAloud) {
+        // If currently reading, stop everything
+        setIsReadingAloud(false);
+        audioRef.current?.pause();
+        setAudioState(prev => ({...prev, status: 'paused'}));
+    } else {
+        // If not reading, start from the current page
+        setIsReadingAloud(true);
+        handlePagePlayback(current - 1);
     }
   };
 
   useEffect(() => {
-    if (audioState.status === 'playing' && audioState.audioDataUri && audioRef.current) {
-        if (audioRef.current.src !== audioState.audioDataUri) {
-            audioRef.current.src = audioState.audioDataUri;
+    const audio = audioRef.current;
+    if (!audio) return;
+
+    if (audioState.status === 'playing' && audioState.audioDataUri) {
+        if (audio.src !== audioState.audioDataUri) {
+            audio.src = audioState.audioDataUri;
         }
-        audioRef.current.play().catch(e => console.error("Audio play failed:", e));
-        audioRef.current.onended = () => setAudioState(prev => ({...prev, status: 'idle'}));
+        audio.play().catch(e => console.error("Audio play failed:", e));
+        audio.onended = () => {
+            // If we were reading aloud, move to the next page
+            if (isReadingAloud && api) {
+                if (api.canScrollNext()) {
+                    api.scrollNext();
+                } else {
+                    // Reached the end of the story
+                    setIsReadingAloud(false);
+                    setAudioState({ status: 'idle', currentPage: -1 });
+                }
+            } else {
+              setAudioState(prev => ({...prev, status: 'idle'}));
+            }
+        };
     }
-  }, [audioState]);
+  }, [audioState, isReadingAloud, api]);
 
 
   return (
@@ -155,10 +189,9 @@ export default function StoryTimePage() {
                 <h2 className="text-3xl font-bold font-headline mb-2">{storyState.title}</h2>
                 <Button onClick={handleListen} disabled={audioState.status === 'loading'}>
                     {audioState.status === 'loading' && <Loader className="mr-2 h-4 w-4 animate-spin" />}
-                    {audioState.status === 'playing' && <Pause className="mr-2 h-4 w-4" />}
-                    {audioState.status === 'paused' && <Play className="mr-2 h-4 w-4" />}
-                    {(audioState.status === 'idle' || audioState.status === 'error') && <Volume2 className="mr-2 h-4 w-4" />}
-                    {audioState.status === 'playing' ? 'Pause' : audioState.status === 'paused' ? 'Resume' : 'Listen to Story'}
+                    {isReadingAloud && <Pause className="mr-2 h-4 w-4" />}
+                    {!isReadingAloud && <Play className="mr-2 h-4 w-4" />}
+                    {isReadingAloud ? 'Stop Reading' : 'Read Aloud'}
                 </Button>
                 <audio ref={audioRef} className="hidden" />
             </div>
