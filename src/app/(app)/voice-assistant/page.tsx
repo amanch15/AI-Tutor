@@ -91,12 +91,11 @@ export default function VoiceAssistantPage() {
     recognitionRef.current?.stop();
 
     try {
-      const textPromise = provideAiTutoringSupport({ studentRequest: query });
-      const audioPromise = textPromise.then(result => generateAudio({ text: result.explanation }));
-
-      const [textResult, audioResult] = await Promise.all([textPromise, audioPromise]);
-      
+      const textResult = await provideAiTutoringSupport({ studentRequest: query });
       setAiResponse(textResult.explanation);
+
+      const audioResult = await generateAudio({ text: textResult.explanation });
+      
       setStatus('speaking');
       
       const audio = audioRef.current;
