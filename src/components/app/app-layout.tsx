@@ -29,6 +29,7 @@ import {
   BookImage,
   ChevronLeft,
   Briefcase,
+  GitGraph,
 } from 'lucide-react';
 import { usePathname } from 'next/navigation';
 import Link from 'next/link';
@@ -42,6 +43,7 @@ const menuItems = [
   { href: '/tutor', label: 'AI Tutor', icon: MessageCircle },
   { href: '/quiz', label: 'AI Quiz Generator', icon: Sparkles },
   { href: '/storytime', label: 'AI Storyteller', icon: BookImage },
+  { href: '/diagram-generator', label: 'Diagram Generator', icon: GitGraph },
   { href: '/games', label: 'Games', icon: Gamepad2 },
   { href: '/resources', label: 'Resources', icon: FolderKanban },
   { href: '/coach', label: 'Resume & Interview', icon: Briefcase },
