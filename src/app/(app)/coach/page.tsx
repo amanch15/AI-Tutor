@@ -1,20 +1,22 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { provideResumeAndInterviewCoaching } from '@/ai/flows/provide-resume-and-interview-coaching';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
-import { Bot, Send, User, Briefcase } from 'lucide-react';
+import { Bot, Send, User, Briefcase, Paperclip, X } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useUser } from '@/firebase';
 import { getAvatarColor } from '@/lib/utils';
 import { useToast } from '@/hooks/use-toast';
+import Image from 'next/image';
 
 type Message = {
   role: 'user' | 'ai';
   content: string;
+  attachmentUri?: string;
 };
 
 // A simple markdown to HTML converter
@@ -42,16 +44,34 @@ export default function CoachPage() {
   const { user } = useUser();
   const avatarColor = getAvatarColor(user?.displayName?.charAt(0));
   const { toast } = useToast();
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [attachment, setAttachment] = useState<{ uri: string, type: string } | null>(null);
+
+  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        setAttachment({ uri: e.target?.result as string, type: file.type });
+      };
+      reader.readAsDataURL(file);
+    }
+  };
 
   const handleSubmission = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    if (!input.trim()) return;
+    if (!input.trim() && !attachment) return;
 
-    const userMessage: Message = { role: 'user', content: input };
+    const userMessage: Message = { 
+      role: 'user', 
+      content: input,
+      attachmentUri: attachment?.uri
+    };
     const newMessages = [...messages, userMessage];
     setMessages(newMessages);
     
     setInput('');
+    setAttachment(null);
     setIsPending(true);
 
     try {
@@ -59,6 +79,7 @@ export default function CoachPage() {
 
       const result = await provideResumeAndInterviewCoaching({ 
         userRequest: input,
+        attachmentDataUri: userMessage.attachmentUri,
         chatHistory: chatHistoryForAI,
       });
       const aiMessage: Message = { role: 'ai', content: result.response };
@@ -73,6 +94,9 @@ export default function CoachPage() {
       })
     } finally {
       setIsPending(false);
+       if(fileInputRef.current) {
+        fileInputRef.current.value = "";
+      }
     }
   };
 
@@ -83,7 +107,7 @@ export default function CoachPage() {
             <h1 className="text-4xl font-bold font-headline">Resume & Interview Coach</h1>
         </div>
         <p className="text-muted-foreground mt-2">
-          Your personal coach for career preparation. Ask for resume reviews, mock interviews, and more.
+          Your personal coach for career preparation. Upload your resume, ask for mock interviews, and more.
         </p>
       </header>
       
@@ -103,6 +127,18 @@ export default function CoachPage() {
                 </Avatar>
               )}
               <div className={cn('max-w-prose rounded-lg p-3 text-sm shadow-md', message.role === 'user' ? 'bg-primary text-primary-foreground rounded-br-none' : 'bg-card rounded-bl-none')}>
+                 {message.attachmentUri && (
+                    <div className="mb-2">
+                        <p className="text-xs font-bold uppercase tracking-wider mb-1">Attachment:</p>
+                        <Image 
+                            src={message.attachmentUri} 
+                            alt="User attachment"
+                            width={200}
+                            height={200}
+                            className="rounded-md object-cover"
+                        />
+                    </div>
+                )}
                 {message.role === 'user' ? (
                   <p>{message.content}</p>
                 ) : (
@@ -136,6 +172,29 @@ export default function CoachPage() {
       </ScrollArea>
       
       <div className="mt-auto bg-background/80 backdrop-blur-sm p-2 rounded-lg border">
+         {attachment && (
+          <div className="p-2 relative">
+            <div className="relative h-24 w-24">
+                <Image
+                src={attachment.uri}
+                alt="Attachment preview"
+                fill
+                className="rounded-md object-cover"
+                />
+            </div>
+            <Button
+              variant="ghost"
+              size="icon"
+              className="absolute top-0 right-0 h-6 w-6 rounded-full bg-destructive/80 text-destructive-foreground hover:bg-destructive"
+              onClick={() => {
+                setAttachment(null);
+                if (fileInputRef.current) fileInputRef.current.value = "";
+              }}
+            >
+              <X className="h-4 w-4" />
+            </Button>
+          </div>
+        )}
         <form onSubmit={handleSubmission} className="flex items-center gap-1">
           <Input
             value={input}
@@ -144,7 +203,18 @@ export default function CoachPage() {
             className="flex-1 bg-transparent border-none focus-visible:ring-0 focus-visible:ring-offset-0"
             disabled={isPending}
           />
-          <Button type="submit" size="icon" disabled={isPending || !input.trim()}>
+          <input
+            type="file"
+            ref={fileInputRef}
+            onChange={handleFileChange}
+            className="hidden"
+            id="file-upload-coach"
+            accept="image/*,application/pdf"
+          />
+          <Button type="button" size="icon" variant="ghost" onClick={() => document.getElementById('file-upload-coach')?.click()} disabled={isPending}>
+            <Paperclip className="h-5 w-5" />
+          </Button>
+          <Button type="submit" size="icon" disabled={isPending || (!input.trim() && !attachment)}>
             <Send className="h-4 w-4" />
           </Button>
         </form>

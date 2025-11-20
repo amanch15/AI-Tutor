@@ -17,6 +17,7 @@ const ChatMessageSchema = z.object({
 
 const ProvideResumeAndInterviewCoachingInputSchema = z.object({
   userRequest: z.string().describe('The user request for coaching.'),
+  attachmentDataUri: z.string().optional().describe("An optional resume or document attachment as a data URI. Expected format: 'data:<mimetype>;base64,<encoded_data>'."),
   chatHistory: z.array(ChatMessageSchema).optional().describe('The history of the conversation so far.'),
 });
 export type ProvideResumeAndInterviewCoachingInput = z.infer<typeof ProvideResumeAndInterviewCoachingInputSchema>;
@@ -58,6 +59,8 @@ Always keep responses:
 - Actionable
 - Fit for students and job seekers
 
+If a file is attached (like a resume), analyze it as the primary context for the user's request. Review the entire document and provide feedback based on its content.
+
 Review the conversation history to understand the full context of the user's request.
 
   {{#if chatHistory}}
@@ -65,6 +68,10 @@ Review the conversation history to understand the full context of the user's req
   {{#each chatHistory}}
   - {{role}}: {{content}}
   {{/each}}
+  {{/if}}
+
+  {{#if attachmentDataUri}}
+  Attachment: {{media url=attachmentDataUri}}
   {{/if}}
 
   User Request: {{{userRequest}}}
