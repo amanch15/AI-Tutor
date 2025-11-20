@@ -6,6 +6,11 @@ export function useIsMobile() {
   const [isMobile, setIsMobile] = React.useState<boolean>(false)
 
   React.useEffect(() => {
+    // Ensure this runs only on the client
+    if (typeof window === 'undefined') {
+      return;
+    }
+
     const checkIsMobile = () => {
       setIsMobile(window.innerWidth < MOBILE_BREAKPOINT)
     }
