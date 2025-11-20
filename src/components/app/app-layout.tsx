@@ -30,6 +30,7 @@ import {
   ChevronLeft,
   Briefcase,
   GitGraph,
+  Mic,
 } from 'lucide-react';
 import { usePathname } from 'next/navigation';
 import Link from 'next/link';
@@ -41,15 +42,16 @@ const menuItems = [
   { href: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
   { href: '/learning-path', label: 'Learning Path', icon: BookOpen },
   { href: '/tutor', label: 'AI Tutor', icon: MessageCircle },
+  { href: '/voice-assistant', label: 'Voice Assistant', icon: Mic },
   { href: '/quiz', label: 'AI Quiz Generator', icon: Sparkles },
   { href: '/storytime', label: 'AI Storyteller', icon: BookImage },
   { href: '/diagram-generator', label: 'Diagram Generator', icon: GitGraph },
   { href: '/games', label: 'Games', icon: Gamepad2 },
-  { href: '/resources', label: 'Resources', icon: FolderKanban },
-  { href: '/coach', label: 'Resume & Interview', icon: Briefcase },
 ];
 
 const mainBottomMenuItems = [
+    { href: '/resources', label: 'Resources', icon: FolderKanban },
+    { href: '/coach', label: 'Resume & Interview', icon: Briefcase },
 ]
 
 const bottomMenuItems = [

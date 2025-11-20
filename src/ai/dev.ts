@@ -12,3 +12,4 @@ import '@/ai/flows/generate-visual-story.ts';
 import '@/ai/flows/generate-story-audio.ts';
 import '@/ai/flows/provide-resume-and-interview-coaching.ts';
 import '@/ai/flows/generate-diagram-flow.ts';
+import '@/ai/flows/generate-audio.ts';
