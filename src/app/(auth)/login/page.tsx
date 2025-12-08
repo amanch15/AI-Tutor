@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 import { useState, useTransition } from 'react';
 import Link from 'next/link';
@@ -30,7 +30,7 @@ function GoogleIcon() {
   );
 }
 
-export default function LoginPage() {
+export default function LoginClient() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
@@ -56,8 +56,8 @@ export default function LoginPage() {
       toast({
         variant: 'destructive',
         title: 'Login Failed',
-        description: error.code === 'auth/invalid-credential' 
-          ? 'Invalid email or password. Please try again.' 
+        description: error.code === 'auth/invalid-credential'
+          ? 'Invalid email or password. Please try again.'
           : error.message || 'An unknown error occurred.',
       });
     } finally {
@@ -101,14 +101,14 @@ export default function LoginPage() {
         description: `An email has been sent to ${email} with instructions to reset your password.`,
       });
     } catch (error: any) {
-       toast({
+      toast({
         title: 'Error',
         description: error.message || 'Failed to send password reset email.',
         variant: 'destructive',
       });
     }
   };
-  
+
   const isLoading = isEmailLoading || isGoogleLoading || isTransitioning;
 
   return (
@@ -136,42 +136,51 @@ export default function LoginPage() {
                   disabled={isLoading}
                 />
               </div>
+
               <div className="grid gap-2">
                 <div className="flex items-center">
                   <Label htmlFor="password">Password</Label>
-                  <button type="button" onClick={handlePasswordReset} className="ml-auto inline-block text-sm text-primary/80 hover:text-primary underline">
+                  <button
+                    type="button"
+                    onClick={handlePasswordReset}
+                    className="ml-auto inline-block text-sm text-primary/80 hover:text-primary underline"
+                  >
                     Forgot your password?
                   </button>
                 </div>
+
                 <div className="relative">
-                    <Input
+                  <Input
                     id="password"
                     type={showPassword ? 'text' : 'password'}
                     required
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     disabled={isLoading}
-                    />
-                    <Button
-                        type="button"
-                        variant="ghost"
-                        size="icon"
-                        className="absolute right-1 top-1/2 -translate-y-1/2 h-7 w-7 text-muted-foreground"
-                        onClick={() => setShowPassword(prev => !prev)}
-                        disabled={isLoading}
-                        aria-label={showPassword ? 'Hide password' : 'Show password'}
-                    >
-                        {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-                    </Button>
+                  />
+
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="icon"
+                    className="absolute right-1 top-1/2 -translate-y-1/2 h-7 w-7 text-muted-foreground"
+                    onClick={() => setShowPassword(prev => !prev)}
+                    disabled={isLoading}
+                    aria-label={showPassword ? 'Hide password' : 'Show password'}
+                  >
+                    {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                  </Button>
                 </div>
               </div>
+
               <Button type="submit" disabled={isLoading} className="w-full">
                 {isEmailLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                 Login
               </Button>
             </div>
           </form>
-           <div className="relative my-4 animate-in fade-in-50 slide-in-from-bottom-5 duration-700 delay-400">
+
+          <div className="relative my-4 animate-in fade-in-50 slide-in-from-bottom-5 duration-700 delay-400">
             <div className="absolute inset-0 flex items-center">
               <span className="w-full border-t" />
             </div>
@@ -181,7 +190,13 @@ export default function LoginPage() {
               </span>
             </div>
           </div>
-          <Button variant="outline" onClick={handleGoogleLogin} disabled={isLoading} className="w-full animate-in fade-in-50 slide-in-from-bottom-5 duration-700 delay-500">
+
+          <Button
+            variant="outline"
+            onClick={handleGoogleLogin}
+            disabled={isLoading}
+            className="w-full animate-in fade-in-50 slide-in-from-bottom-5 duration-700 delay-500"
+          >
             {isGoogleLoading ? (
               <Loader2 className="mr-2 h-4 w-4 animate-spin" />
             ) : (
@@ -189,6 +204,7 @@ export default function LoginPage() {
             )}
             Google
           </Button>
+
           <div className="mt-4 text-center text-sm animate-in fade-in-50 slide-in-from-bottom-5 duration-700 delay-600">
             Don&apos;t have an account?{' '}
             <Link href="/signup" className="underline text-primary/80 hover:text-primary">
